@@ -121,6 +121,12 @@ All metrics are aggregated out-of-fold using Platt-calibrated predictions:
 | :---: | :---: |
 | ![Heartbreaker ROC Curve](reports/figures/hb_meta_fig3_roc_curve.png) | ![Heartbreaker Confusion Matrix](reports/figures/hb_meta_fig2_confusion_matrix.png) |
 
+### 🩺 Multiclass 5-Label Model
+
+| Multiclass ROC Curves | Multiclass PR Curves |
+| :---: | :---: |
+| ![Multiclass ROC](reports/figures/multiclass_roc_curve.png) | ![Multiclass PR](reports/figures/multiclass_pr_curve.png) |
+
 ### 🔍 Robustness & Ablation Analysis
 
 | Ablation Performance Ladder | Permutation Feature Importance |
@@ -179,12 +185,14 @@ python src/model_evaluation/run_heartbreaker_stress_tests.py
 
 * **`src/model_training/train_1d_ecg_model.py`**: Builds, trains, and calibrates the 2-block 1D ResNet using raw signal waveforms.
 * **`src/model_training/train_multimodal_ecg_model.py`**: Integrates demographic data and frozen ECG signal embeddings into a multimodal classifier.
+* **`src/model_training/train_multiclass_ecg_model.py`**: Multi-label 5-class extension predicting NORM, MI, STTC, CD, and HYP.
 * **`src/model_evaluation/run_heartbreaker_stress_tests.py`**: Evaluates the multimodal model under permutation shuffling and performs feature ablation stress tests.
 * **`src/streamlit_dashboard/app.py`**: Interactive Streamlit application simulating the clinical triage dashboard using held-out test signals.
 * **`src/data_processing/multimodal_data_prep.py`**: Handles clean parsing, missingness encoding, and preprocessing of demographic variables.
 * **`reports/final_ecg_report.md`**: Detailed final report detailing validation framework, correction of bugs, and experimental narratives.
 * **`reports/validation_report.md`**: In-depth threshold sweep analysis, confusion matrices, and metrics of the raw 1D pipeline.
 * **`reports/heartbreaker_validation_report.md`**: Validation guide, stress test metrics, and ablation logs for the Multimodal extension.
+* **`reports/multiclass_validation_report.md`**: Validation guide, class breakdown, and leakage audits for the Multi-label model.
 * **`reports/methodology_guide.md`**: Mathematical details on focal loss, Z-normalization, Platt calibration, and bootstrap confidence intervals.
 
 ---

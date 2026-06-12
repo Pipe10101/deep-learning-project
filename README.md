@@ -89,3 +89,11 @@ All models are evaluated using a patient-disjoint 5-Fold Stratified Group K-Fold
 - **`validation_report.md`**: In-depth threshold sweep analysis, confusion matrices, and metrics of the raw 1D pipeline.
 - **`heartbreaker_validation_report.md`**: Validation guide, stress test metrics, and ablation logs for the Multimodal extension.
 - **`methodology_guide.md`**: Mathematical details on focal loss, Z-normalization, Platt calibration, and bootstrap confidence intervals.
+
+---
+
+## 👥 Contributors
+
+- **[Pipe10101](https://github.com/Pipe10101)**
+- **[Vlad494-cmd](https://github.com/Vlad494-cmd)**
+

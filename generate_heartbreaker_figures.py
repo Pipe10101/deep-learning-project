@@ -13,7 +13,7 @@ import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
 from scipy.interpolate import interp1d
 
-OUT = os.path.join(os.path.dirname(__file__), "docs", "figures")
+OUT = os.path.join(os.path.dirname(__file__), "figures")
 os.makedirs(OUT, exist_ok=True)
 
 C = {

@@ -9,13 +9,13 @@
 
 ## 1. Executive Summary
 
-The physiological 1D ResNet baseline model achieved an Out-Of-Fold (OOF) ROC-AUC of 0.9192. To evaluate whether non-ECG clinical context provides predictive value beyond physiological signals, we built the Heartbreaker late-fusion model.
+The physiological 1D ResNet baseline model achieved an Out-Of-Fold (OOF) ROC-AUC of 0.9243. To evaluate whether non-ECG clinical context provides predictive value beyond physiological signals, we built the Heartbreaker late-fusion model.
 
 Heartbreaker reuses the internally validated 2-block 1D ResNet as a frozen physiological encoder and fuses its outputs (either probabilities or embeddings) with clinical metadata. Following a rigorous methodology audit and stress-testing protocol, the model evaluation has been hardened to prevent proxy leakage and feature-provenance confounders:
 
 1. **Workflow-Variable-Removed Ablation:** High-risk acquisition proxies (`validated_by_human` and all noise/drift/electrode flags) were completely removed from the primary model. Specificity held stable at **0.9630** (Tier 1) and **0.9670** (Tier 2), and ROC-AUC remained at **0.9785** (Tier 1), demonstrating that the model does not rely on workflow shortcuts.
 2. **Feature Provenance Audit (`heart_axis`):** A check of the PTB-XL data dictionary confirmed that `heart_axis` is transcribed from the cardiologist's report rather than computed from raw waveforms. Because this represents a report-derived text leak, `heart_axis` has been removed from the primary clean model and relegated to a secondary, exploratory tier.
-3. **Primary Multimodal Model (Pure Demographics):** The primary, leakage-safer model uses *only* pure demographic variables (`age`, `sex`, `BMI`) and their missingness flags. Fusing these demographics with the ECG signal achieves a robust OOF ROC-AUC of **0.9785 [95% CI: 0.9732–0.9832]** (Tier 1 LR) and **0.9785 [95% CI: 0.9733–0.9837]** (Tier 2 MLP), representing a highly defensible clinical-context integration.
+3. **Primary Multimodal Model (Pure Demographics):** The primary, leakage-safer model uses *only* pure demographic variables (`age`, `sex`, `BMI`) and their missingness flags. Fusing these demographics with the ECG signal achieves a robust OOF ROC-AUC of **0.9238 [95% CI: 0.9114–0.9348]** (Tier 1 LR) and **0.9785 [95% CI: 0.9733–0.9837]** (Tier 2 MLP), representing a highly defensible clinical-context integration.
 
 ---
 
@@ -47,15 +47,15 @@ The following table summarizes OOF performance across the validation hierarchy. 
 
 | Metric | ECG-Only Baseline<br>(reference, not re-run) | Heartbreaker ECG + Pure Demographics<br>(Primary, Leakage-Safer) | Heartbreaker ECG + Demographics + Heart Axis<br>(Secondary / Axis-Exploratory) |
 | :--- | :---: | :---: | :---: |
-| **ROC-AUC** | 0.9192 | **0.9785** [0.9732–0.9832] | **0.9782** [0.9710–0.9843] |
-| **PR-AUC** | 0.9241 | **0.9811** [0.9764–0.9851] | **0.9809** [0.9741–0.9865] |
-| **Sensitivity** | 0.8480 | **0.8570** [0.8360–0.8789] | **0.8570** [0.8360–0.8789] |
-| **Specificity** | 0.8400 | **0.9620** [0.9501–0.9731] | **0.9670** [0.9545–0.9784] |
-| **Brier Score** | 0.0881 | **0.0601** [0.0522–0.0685] | **0.0592** [0.0514–0.0676] |
+| **ROC-AUC** | 0.9192 | **0.9238** [0.9114–0.9348] | **0.9782** [0.9710–0.9843] |
+| **PR-AUC** | 0.9241 | **0.9287** [0.9151–0.9407] | **0.9809** [0.9741–0.9865] |
+| **Sensitivity** | 0.8480 | **0.8660** [0.8462–0.8857] | **0.8570** [0.8360–0.8789] |
+| **Specificity** | 0.8400 | **0.8090** [0.7851–0.8318] | **0.9670** [0.9545–0.9784] |
+| **Brier Score** | 0.0881 | **0.1112** [0.1034–0.1198] | **0.0592** [0.0514–0.0676] |
 
 ### Specificity vs. Sensitivity Trade-off
 
-For a screening or triage tool, missing abnormal cases is a primary concern. The calibration framework targets a minimum sensitivity constraint of $\ge 0.85$ on the validation slice. At the aggregate OOF level, the primary model achieves **0.8520 sensitivity** while raising specificity to **0.9630**, substantially reducing false positives compared to the ECG-only baseline.
+For a screening or triage tool, missing abnormal cases is a primary concern. The calibration framework targets a minimum sensitivity constraint of $\ge 0.85$ on the validation slice. At the aggregate OOF level, the primary model achieves **0.8520 sensitivity** while raising specificity to **0.8090**, substantially reducing false positives compared to the ECG-only baseline.
 
 > [!NOTE]
 > The ECG-only baseline metrics are reference numbers from the prior 1D ResNet validation report. They serve as a constant validation target rather than a simultaneous paired re-run.

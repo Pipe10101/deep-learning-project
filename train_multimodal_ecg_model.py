@@ -340,25 +340,14 @@ def main():
     print(f"  Valid signals: {len(X_signals)}  (Normal={int((y==0).sum())}, Abnormal={int((y==1).sum())})")
 
     # ── 3. Load ECG encoder (frozen) ──────────────────────────────────
-    if not os.path.exists(ECG_MODEL_PATH):
-        print(f"\n[ERROR] ECG model not found: {ECG_MODEL_PATH}")
+    # ── 3. Load ECG probabilities (from out-of-fold predictions to prevent leakage) ──
+    OOF_PROBS_PATH = "clean_oof_ecg_probs.npy"
+    if not os.path.exists(OOF_PROBS_PATH):
+        print(f"\n[ERROR] OOF probabilities file not found: {OOF_PROBS_PATH}")
         print("  Run train_1d_ecg_model.py first to generate it.")
         return
-    encoder = load_ecg_encoder(ECG_MODEL_PATH)
-
-    # ── 4. Pre-compute ECG embeddings for all records ─────────────────
-    print("\nExtracting ECG embeddings (frozen encoder)...")
-    X_ecg_embed = extract_ecg_embeddings(encoder, X_signals)
-    print(f"  ECG embedding matrix: {X_ecg_embed.shape}")
-
-    # Also get raw ECG probabilities (for Tier 1)
-    # Build a tiny model: encoder → Dense(1,sigmoid) to get probs
-    ecg_prob_model_layer = None
-    base_model_tmp = tf.keras.models.load_model(
-        ECG_MODEL_PATH, custom_objects={}, compile=False)
-    X_ecg_probs = base_model_tmp.predict(X_signals, batch_size=BATCH_SIZE, verbose=0).flatten()
-    del base_model_tmp
-    print(f"  ECG raw probabilities extracted: shape={X_ecg_probs.shape}")
+    X_ecg_probs = np.load(OOF_PROBS_PATH)
+    print(f"  ECG clean OOF probabilities loaded: shape={X_ecg_probs.shape}")
 
     # ── 5. Cross-validation ───────────────────────────────────────────
     skf = StratifiedKFold(n_splits=N_FOLDS, shuffle=True, random_state=RANDOM_STATE)
@@ -431,7 +420,18 @@ def main():
         # ════════════════════════════════════════════════════════════
         print(f"  [Tier 2] Training embedding-level fusion MLP...")
 
-        ecg_dim = X_ecg_embed.shape[1]
+        # Load fold-specific model to prevent target leakage in embedding extraction
+        fold_model_path = f"binary_1d_ecg_model_fold{fold+1}.h5"
+        if not os.path.exists(fold_model_path):
+            raise FileNotFoundError(f"Fold-specific model not found: {fold_model_path}")
+        fold_encoder = load_ecg_encoder(fold_model_path)
+
+        # Extract embeddings out-of-fold using fold-specific model
+        X_ecg_embed_train = extract_ecg_embeddings(fold_encoder, X_signals[sub_train_idx])
+        X_ecg_embed_val   = extract_ecg_embeddings(fold_encoder, X_signals[val_cal_idx])
+        X_ecg_embed_test  = extract_ecg_embeddings(fold_encoder, X_signals[test_idx])
+
+        ecg_dim = X_ecg_embed_train.shape[1]
         fusion_model = build_fusion_model(ecg_dim, n_meta)
 
         early_stop = callbacks.EarlyStopping(
@@ -440,10 +440,10 @@ def main():
         )
 
         fusion_model.fit(
-            [X_ecg_embed[sub_train_idx], X_meta_train_raw],
+            [X_ecg_embed_train, X_meta_train_raw],
             y[sub_train_idx],
             validation_data=(
-                [X_ecg_embed[val_cal_idx], X_meta_val],
+                [X_ecg_embed_val, X_meta_val],
                 y[val_cal_idx]
             ),
             epochs=FUSION_EPOCHS,
@@ -454,14 +454,14 @@ def main():
 
         # Calibrate + threshold on val-cal (must refit — distribution changed)
         t2_val_raw = fusion_model.predict(
-            [X_ecg_embed[val_cal_idx], X_meta_val], verbose=0).flatten()
+            [X_ecg_embed_val, X_meta_val], verbose=0).flatten()
         t2_cal, t2_thresh, _ = platt_calibrate_and_threshold(
             y[val_cal_idx], t2_val_raw)
         print(f"    Tier-2 threshold: {t2_thresh:.4f}")
 
         # Evaluate on test fold
         t2_test_raw = fusion_model.predict(
-            [X_ecg_embed[test_idx], X_meta_test], verbose=0).flatten()
+            [X_ecg_embed_test, X_meta_test], verbose=0).flatten()
         t2_test_cal = t2_cal.predict_proba(t2_test_raw.reshape(-1, 1))[:, 1]
         t2_preds    = (t2_test_cal >= t2_thresh).astype(int)
         t2_m = fold_metrics(y[test_idx], t2_test_cal, t2_thresh)

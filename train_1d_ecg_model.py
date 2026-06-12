@@ -205,7 +205,7 @@ def main():
         val_gen = ECGDataGenerator(X_val_cal, y_val_cal, batch_size=32, shuffle=False, augment=False)
         
         model = build_smaller_resnet_1d()
-        early_stop = callbacks.EarlyStopping(monitor='val_auc', patience=25, mode='max', restore_best_weights=True)
+        early_stop = callbacks.EarlyStopping(monitor='val_auc', patience=15, mode='max', restore_best_weights=True)
         
         model.fit(
             train_gen,
@@ -214,6 +214,11 @@ def main():
             callbacks=[early_stop],
             verbose=0
         )
+        
+        # Save fold-specific model to prevent target leakage in downstream multimodal models
+        fold_model_path = f"binary_1d_ecg_model_fold{fold+1}.h5"
+        model.save(fold_model_path)
+        print(f"  Saved Fold {fold+1} model to {fold_model_path}")
         
         # Fit Platt Scaler exclusively on nested validation data
         y_val_cal_probs_raw = model.predict(X_val_cal, verbose=0).flatten()
@@ -276,6 +281,9 @@ def main():
     print(f"OOF Sensitivity: {sens:.4f} (95% CI: {ci['sens_ci'][0]:.4f} - {ci['sens_ci'][1]:.4f})")
     print(f"OOF Specificity: {spec:.4f} (95% CI: {ci['spec_ci'][0]:.4f} - {ci['spec_ci'][1]:.4f})")
     print("=====================================")
+    
+    # Save OOF calibrated probabilities for downstream multimodal models and stress tests
+    np.save("clean_oof_ecg_probs.npy", oof_probs_cal)
     
     # Save results to docs
     os.makedirs('docs', exist_ok=True)

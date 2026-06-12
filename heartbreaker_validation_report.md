@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-The physiological 1D ResNet baseline model achieved an Out-Of-Fold (OOF) ROC-AUC of 0.9192. To evaluate whether non-ECG clinical context provides predictive value beyond physiological signals, we built the Heartbreaker late-fusion model. 
+The physiological 1D ResNet baseline model achieved an Out-Of-Fold (OOF) ROC-AUC of 0.9192. To evaluate whether non-ECG clinical context provides predictive value beyond physiological signals, we built the Heartbreaker late-fusion model.
 
 Heartbreaker reuses the internally validated 2-block 1D ResNet as a frozen physiological encoder and fuses its outputs (either probabilities or embeddings) with clinical metadata. Following a rigorous methodology audit and stress-testing protocol, the model evaluation has been hardened to prevent proxy leakage and feature-provenance confounders:
 
@@ -32,9 +32,9 @@ Heartbreaker explicitly separates the physiological representation from the clin
 
 ## 3. Data Integrity & Leakage Prevention
 
-Because clinical reports are generated *after* the ECG interpretation, they carry an extremely high risk of diagnostic leakage. 
+Because clinical reports are generated *after* the ECG interpretation, they carry an extremely high risk of diagnostic leakage.
 
-To address this, Heartbreaker enforces strict, fold-safe text processing. For exploratory report-text fusions, a TF-IDF vectorizer and point-biserial correlation audit are fitted *exclusively on the sub-training split* of each fold. Any text feature showing a correlation $|r_{pb}| \ge 0.25$ with the label is dropped. 
+To address this, Heartbreaker enforces strict, fold-safe text processing. For exploratory report-text fusions, a TF-IDF vectorizer and point-biserial correlation audit are fitted *exclusively on the sub-training split* of each fold. Any text feature showing a correlation $|r_{pb}| \ge 0.25$ with the label is dropped.
 
 > [!WARNING]
 > While the automated TF-IDF correlation audit drops obvious leaking terms (e.g. `infarkt`), it cannot guarantee complete safety against clinical phrasing or complex combinations. Therefore, models incorporating report text are classified strictly as exploratory upper-bounds.
@@ -54,6 +54,7 @@ The following table summarizes OOF performance across the validation hierarchy. 
 | **Brier Score** | 0.0881 | **0.0601** [0.0522–0.0685] | **0.0592** [0.0514–0.0676] |
 
 ### Specificity vs. Sensitivity Trade-off
+
 For a screening or triage tool, missing abnormal cases is a primary concern. The calibration framework targets a minimum sensitivity constraint of $\ge 0.85$ on the validation slice. At the aggregate OOF level, the primary model achieves **0.8520 sensitivity** while raising specificity to **0.9630**, substantially reducing false positives compared to the ECG-only baseline.
 
 > [!NOTE]
@@ -199,6 +200,7 @@ To investigate whether Heartbreaker's performance gains are driven by true clini
 ### Negative Controls & Sub-Model Tests
 
 The following stress tests evaluate isolated feature sets under strict out-of-fold (OOF) conditions:
+
 * **Metadata-only (No ECG):** Assesses if structured variables encode workflow shortcuts. An OOF ROC-AUC of **0.7820 [95% CI: 0.7621–0.8026]** indicates a moderate signal that is partially clinical and partially a possible workflow proxy.
 * **Report-only (No ECG, No Meta):** Assesses if the diagnostic text is directly leaking the ground truth. The OOF ROC-AUC of **0.9121 [95% CI: 0.8981–0.9262]** confirms that TF-IDF text features suffer from severe label leakage despite correlation filtering.
 * **Permutation Tests (Group & Joint):** Measured the drop in ROC-AUC when variables are shuffled across patients.
@@ -225,6 +227,7 @@ Based on the full suite of ablation stress tests, the Heartbreaker evaluation hi
 | **Level 4** | ECG + Tabular + Report Text | Exploratory upper-bound model (contains report text leakage). |
 
 ### Final Conclusion
-By subjecting the pipeline to standalone single-modality checks, group-wise permutations, and provenance audits, the evidence supports a defensible internal-validation result. The primary clean model (Level 3) achieves a highly robust OOF performance (**ROC-AUC 0.9771, Sensitivity 0.8520, Specificity 0.9630**), proving that clinical context adds significant discriminative value without introducing workflow-proxy or text-derived leakage. 
+
+By subjecting the pipeline to standalone single-modality checks, group-wise permutations, and provenance audits, the evidence supports a defensible internal-validation result. The primary clean model (Level 3) achieves a highly robust OOF performance (**ROC-AUC 0.9771, Sensitivity 0.8520, Specificity 0.9630**), proving that clinical context adds significant discriminative value without introducing workflow-proxy or text-derived leakage.
 
 External validation on independent datasets is required before making any clinical claims.

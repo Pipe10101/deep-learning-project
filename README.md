@@ -141,7 +141,7 @@ All metrics are aggregated out-of-fold using Platt-calibrated predictions:
 
 ---
 
-### 🩺 Multiclass 5-Label Model
+### 🩺 Multi-Heartbreaker 5-Label Model
 
 This extension pivots from a binary abnormal/normal framework into a multi-label diagnostic system capable of identifying co-occurring pathologies. The model maps raw waveforms into the following 5 distinct clinical superclasses:
 
@@ -233,7 +233,7 @@ python src/model_evaluation/run_heartbreaker_stress_tests.py
 
 * **`src/model_training/train_1d_ecg_model.py`**: Builds, trains, and calibrates the 2-block 1D ResNet using raw signal waveforms.
 * **`src/model_training/train_multimodal_ecg_model.py`**: Integrates demographic data and frozen ECG signal embeddings into a multimodal classifier.
-* **`src/model_training/train_multiclass_ecg_model.py`**: Multi-label 5-class extension predicting NORM, MI, STTC, CD, and HYP.
+* **`src/model_training/train_multiclass_ecg_model.py`**: Multi-Heartbreaker 5-class extension predicting NORM, MI, STTC, CD, and HYP.
 * **`src/model_evaluation/run_heartbreaker_stress_tests.py`**: Evaluates the multimodal model under permutation shuffling and performs feature ablation stress tests.
 * **`src/streamlit_dashboard/app.py`**: Interactive Streamlit application simulating the clinical triage dashboard using held-out test signals.
 * **`src/data_processing/multimodal_data_prep.py`**: Handles clean parsing, missingness encoding, and preprocessing of demographic variables.

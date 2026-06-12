@@ -281,7 +281,7 @@ def load_and_preprocess_single_signal(record_path: str, fs: int = 100, length: i
         return None
 
 
-def load_and_cache_dataset(metadata_csv: str, raw_dir: str, cache_path: str = "dataset_1d/processed_signals_2000.npz") -> tuple:
+def load_and_cache_dataset(metadata_csv: str, raw_dir: str, cache_path: str = "data/processed_signals_2000.npz") -> tuple:
     """
     Checks if a processed numpy cache exists. If yes, loads it instantly.
     If not, processes raw signals, saves to cache, and returns arrays.
@@ -326,7 +326,7 @@ def load_and_cache_dataset(metadata_csv: str, raw_dir: str, cache_path: str = "d
 
 if __name__ == "__main__":
     import os
-    META_CSV = "dataset_1d/subset_metadata_2000.csv"
+    META_CSV = "data/subset_metadata_2000.csv"
     if not os.path.exists(META_CSV):
         print(f"Metadata CSV not found: {META_CSV}")
     else:

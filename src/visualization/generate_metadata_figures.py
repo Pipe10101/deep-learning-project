@@ -4,7 +4,8 @@ import seaborn as sns
 import os
 
 # Create figures directory if it doesn't exist
-os.makedirs('figures', exist_ok=True)
+OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "reports", "figures"))
+os.makedirs(OUT, exist_ok=True)
 
 # Set style
 plt.style.use('default')
@@ -47,7 +48,7 @@ ax.set_xticklabels([f"Fold {i}" for i in FOLDS['fold']])
 ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.2), ncol=3)
 ax.set_ylim(0.7, 1.05)
 plt.tight_layout()
-plt.savefig('figures/hb_meta_fig1_per_fold.png', dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(OUT, 'hb_meta_fig1_per_fold.png'), dpi=300, bbox_inches='tight')
 plt.close()
 
 # ─── 2. CONFUSION MATRIX ──────────────────────────────────────────────────
@@ -58,7 +59,7 @@ sns.heatmap(CM, annot=True, fmt='d', cmap='Blues',
             annot_kws={'size': 16})
 plt.title('Heartbreaker (Metadata Only): Aggregate OOF Confusion Matrix\nThreshold optimized per-fold for Sens >= 0.85', pad=20)
 plt.tight_layout()
-plt.savefig('figures/hb_meta_fig2_confusion_matrix.png', dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(OUT, 'hb_meta_fig2_confusion_matrix.png'), dpi=300, bbox_inches='tight')
 plt.close()
 
 # ─── 3. ROC CURVE (Simulated for viz) ──────────────────────────────────────
@@ -83,7 +84,7 @@ plt.ylabel('True Positive Rate')
 plt.title('Heartbreaker (Metadata Only): ROC Curve')
 plt.legend(loc="lower right")
 plt.grid(True, alpha=0.3)
-plt.savefig('figures/hb_meta_fig3_roc_curve.png', dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(OUT, 'hb_meta_fig3_roc_curve.png'), dpi=300, bbox_inches='tight')
 plt.close()
 
 print("Metadata-only figures generated successfully.")

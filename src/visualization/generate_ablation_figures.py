@@ -46,7 +46,7 @@ perm_drops = [
     0.0000
 ]
 
-os.makedirs("figures", exist_ok=True)
+os.makedirs("reports/figures", exist_ok=True)
 
 # 1. Ablation Ladder Bar Chart
 plt.figure(figsize=(10, 6))
@@ -62,7 +62,7 @@ for bar in bars:
     plt.text(width + 0.005, bar.get_y() + bar.get_height()/2, f'{width:.4f}', va='center', fontsize=10, fontweight='bold')
 
 plt.tight_layout()
-plt.savefig("figures/ablation_ladder_chart.png", dpi=300)
+plt.savefig("reports/figures/ablation_ladder_chart.png", dpi=300)
 plt.close()
 
 # 2. Permutation Test Bar Chart
@@ -78,7 +78,7 @@ for bar in bars:
     plt.text(width + 0.001, bar.get_y() + bar.get_height()/2, f'+{width:.4f}', va='center', fontsize=10, fontweight='bold')
 
 plt.tight_layout()
-plt.savefig("figures/permutation_test_chart.png", dpi=300)
+plt.savefig("reports/figures/permutation_test_chart.png", dpi=300)
 plt.close()
 
-print("Figures generated successfully in figures/")
+print("Figures generated successfully in reports/figures/")

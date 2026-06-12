@@ -19,7 +19,7 @@ from matplotlib.patches import FancyBboxPatch
 from scipy.interpolate import interp1d
 
 # ─── Output directory ───────────────────────────────────────────────────────
-OUT = os.path.join(os.path.dirname(__file__), "figures")
+OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "reports", "figures"))
 os.makedirs(OUT, exist_ok=True)
 
 # ─── Colour palette (matches project dark-professional theme) ───────────────

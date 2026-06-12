@@ -14,10 +14,10 @@ def download_file(url, dest):
     return True
 
 def main():
-    meta = pd.read_csv('dataset_1d/subset_metadata_2000.csv')
+    meta = pd.read_csv('data/subset_metadata_2000.csv')
     
     base_url = "https://physionet.org/files/ptb-xl/1.0.3/"
-    out_dir = "dataset_1d/raw"
+    out_dir = "data/raw"
     os.makedirs(out_dir, exist_ok=True)
     
     download_tasks = []

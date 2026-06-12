@@ -88,7 +88,7 @@ Metadata matrix: 2000 records × 23 static features
   One-hot:             heart_axis (9 buckets)
   Text reports:        2000 non-empty (include_text=False)
   Class balance:       Normal=1000, Abnormal=1000
-  [cache] Loading preprocessed signals from dataset_1d/processed_signals_2000.npz...
+  [cache] Loading preprocessed signals from data/processed_signals_2000.npz...
   Valid signals: 2000  (Normal=1000, Abnormal=1000)
   ECG clean OOF probabilities loaded: shape=(2000,)
 
@@ -218,7 +218,7 @@ Loaded ECG model: binary_1d_ecg_model_fold5.h5
     Sens ≥ 0.85: ✅  |  AUC↑: —  |  PR-AUC↑: —  |  Spec↑: —
     → ❌ REJECT
 
-  Results saved to docs/heartbreaker_results.txt
+  Results saved to models/heartbreaker_results.txt
 ```
 
 ---

@@ -22,7 +22,7 @@ st.markdown("<div class='subtitle'>Valid, Single-Source Diagnostic Model trained
 
 @st.cache_resource
 def load_model():
-    model_path = 'binary_1d_ecg_model.h5'
+    model_path = 'models/binary_1d_ecg_model.h5'
     if os.path.exists(model_path):
         return tf.keras.models.load_model(model_path)
     return None
@@ -63,7 +63,7 @@ else:
     st.markdown("### Select an ECG Record to Analyze")
     st.write("This demo uses held-out test records from the PTB-XL database to prove the model operates on pure physiological signals, entirely immune to image-rendering confounds.")
     
-    metadata_path = 'dataset_1d/subset_metadata.csv'
+    metadata_path = 'data/subset_metadata_2000.csv'
     if os.path.exists(metadata_path):
         df = pd.read_csv(metadata_path)
         
@@ -82,7 +82,7 @@ else:
         
         if st.button("Run Diagnostic"):
             record_name = examples[choice]
-            record_path = os.path.join('dataset_1d/raw', record_name)
+            record_path = os.path.join('data/raw', record_name)
             
             sig = load_and_preprocess_signal(record_path)
             

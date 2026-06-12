@@ -104,19 +104,19 @@ All metrics are aggregated out-of-fold using Platt-calibrated predictions:
 
 | ROC Curve | Confusion Matrix |
 | :---: | :---: |
-| ![1D ECG ROC Curve](figures/fig5_roc_curve.png) | ![1D ECG Confusion Matrix](figures/fig3_confusion_matrix.png) |
+| ![1D ECG ROC Curve](reports/figures/fig5_roc_curve.png) | ![1D ECG Confusion Matrix](reports/figures/fig3_confusion_matrix.png) |
 
 ### ⚡ Heartbreaker Multimodal Fusion Model
 
 | Multimodal ROC Curve | Multimodal Confusion Matrix |
 | :---: | :---: |
-| ![Heartbreaker ROC Curve](figures/hb_meta_fig3_roc_curve.png) | ![Heartbreaker Confusion Matrix](figures/hb_meta_fig2_confusion_matrix.png) |
+| ![Heartbreaker ROC Curve](reports/figures/hb_meta_fig3_roc_curve.png) | ![Heartbreaker Confusion Matrix](reports/figures/hb_meta_fig2_confusion_matrix.png) |
 
 ### 🔍 Robustness & Ablation Analysis
 
 | Ablation Performance Ladder | Permutation Feature Importance |
 | :---: | :---: |
-| ![Ablation Ladder](figures/ablation_ladder_chart.png) | ![Permutation Importance](figures/permutation_test_chart.png) |
+| ![Ablation Ladder](reports/figures/ablation_ladder_chart.png) | ![Permutation Importance](reports/figures/permutation_test_chart.png) |
 
 ---
 
@@ -130,44 +130,44 @@ pip install -r requirements.txt
 ### 2. Download raw waveforms
 Download the balanced 2,000 patient subset of PTB-XL raw physiological signals:
 ```bash
-python download_ptbxl_2000.py
+python src/download_ptbxl_2000.py
 ```
 
 ### 3. Run the 1D Physiological Model (ECG-Only)
 Train the 1D ResNet classifier on raw 10-second PTB-XL signal waveforms:
 ```bash
-python train_1d_ecg_model.py
+python src/train_1d_ecg_model.py
 ```
 
 Launch the interactive Streamlit triage application for raw ECG signals:
 ```bash
-streamlit run app.py
+streamlit run src/app.py
 ```
 
 ### 4. Run the Multimodal Fusion Model (Heartbreaker)
 Train the multimodal model using fused ECG features and patient demographic metadata:
 ```bash
-python train_multimodal_ecg_model.py
+python src/train_multimodal_ecg_model.py
 ```
 
 Run stress tests, ablation analyses, and permutation importance evaluations on the multimodal classifier:
 ```bash
-python run_heartbreaker_stress_tests.py
+python src/run_heartbreaker_stress_tests.py
 ```
 
 ---
 
 ## 📁 Core Repository Structure
 
-- **`train_1d_ecg_model.py`**: Builds, trains, and calibrates the 2-block 1D ResNet using raw signal waveforms.
-- **`train_multimodal_ecg_model.py`**: Integrates demographic data and frozen ECG signal embeddings into a multimodal classifier.
-- **`run_heartbreaker_stress_tests.py`**: Evaluates the multimodal model under permutation shuffling and performs feature ablation stress tests.
-- **`app.py`**: Interactive Streamlit application simulating the clinical triage dashboard using held-out test signals.
-- **`multimodal_data_prep.py`**: Handles clean parsing, missingness encoding, and preprocessing of demographic variables.
-- **`final_ecg_report.md`**: Detailed final report detailing validation framework, correction of bugs, and experimental narratives.
-- **`validation_report.md`**: In-depth threshold sweep analysis, confusion matrices, and metrics of the raw 1D pipeline.
-- **`heartbreaker_validation_report.md`**: Validation guide, stress test metrics, and ablation logs for the Multimodal extension.
-- **`methodology_guide.md`**: Mathematical details on focal loss, Z-normalization, Platt calibration, and bootstrap confidence intervals.
+- **`src/train_1d_ecg_model.py`**: Builds, trains, and calibrates the 2-block 1D ResNet using raw signal waveforms.
+- **`src/train_multimodal_ecg_model.py`**: Integrates demographic data and frozen ECG signal embeddings into a multimodal classifier.
+- **`src/run_heartbreaker_stress_tests.py`**: Evaluates the multimodal model under permutation shuffling and performs feature ablation stress tests.
+- **`src/app.py`**: Interactive Streamlit application simulating the clinical triage dashboard using held-out test signals.
+- **`src/multimodal_data_prep.py`**: Handles clean parsing, missingness encoding, and preprocessing of demographic variables.
+- **`reports/final_ecg_report.md`**: Detailed final report detailing validation framework, correction of bugs, and experimental narratives.
+- **`reports/validation_report.md`**: In-depth threshold sweep analysis, confusion matrices, and metrics of the raw 1D pipeline.
+- **`reports/heartbreaker_validation_report.md`**: Validation guide, stress test metrics, and ablation logs for the Multimodal extension.
+- **`reports/methodology_guide.md`**: Mathematical details on focal loss, Z-normalization, Platt calibration, and bootstrap confidence intervals.
 
 ---
 

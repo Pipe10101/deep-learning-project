@@ -173,8 +173,8 @@ def compute_bootstrap_ci(y_true, y_pred_probs, y_pred_classes, n_bootstraps=1000
     }
 
 def main():
-    metadata_path = 'dataset_1d/subset_metadata_2000.csv'
-    base_dir = 'dataset_1d/raw'
+    metadata_path = 'data/subset_metadata_2000.csv'
+    base_dir = 'data/raw'
     
     X, y, _ = load_and_cache_dataset(metadata_path, base_dir)
     
@@ -216,7 +216,7 @@ def main():
         )
         
         # Save fold-specific model to prevent target leakage in downstream multimodal models
-        fold_model_path = f"binary_1d_ecg_model_fold{fold+1}.h5"
+        fold_model_path = f"models/binary_1d_ecg_model_fold{fold+1}.h5"
         model.save(fold_model_path)
         print(f"  Saved Fold {fold+1} model to {fold_model_path}")
         
@@ -283,11 +283,11 @@ def main():
     print("=====================================")
     
     # Save OOF calibrated probabilities for downstream multimodal models and stress tests
-    np.save("clean_oof_ecg_probs.npy", oof_probs_cal)
+    np.save("models/clean_oof_ecg_probs.npy", oof_probs_cal)
     
-    # Save results to docs
-    os.makedirs('docs', exist_ok=True)
-    with open('docs/1d_model_results.txt', 'w') as f:
+    # Save results to models
+    os.makedirs('models', exist_ok=True)
+    with open('models/1d_model_results.txt', 'w') as f:
         f.write("Option 1A: 1D-CNN on PTB-XL (Single-Source, Confound-Free, OOF Aggregated)\n")
         f.write("=========================================================================\n")
         f.write(f"OOF ROC-AUC: {auc:.4f} (95% CI: {ci['auc_ci'][0]:.4f} - {ci['auc_ci'][1]:.4f})\n")
@@ -305,7 +305,7 @@ def main():
         epochs=40,
         verbose=0
     )
-    final_model.save('binary_1d_ecg_model.h5')
+    final_model.save('models/binary_1d_ecg_model.h5')
     print("Final model saved successfully.")
     
 if __name__ == '__main__':

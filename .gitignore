@@ -1,14 +1,19 @@
-*.h5
+# Ignore all compiled python files
+__pycache__/
+*.pyc
+
+# Ignore large files globally
 *.zip
+*.log
+.DS_Store
+
+# Ignore any database, csv, weights, and npy files globally
+*.h5
 *.npy
 *.csv
-*.log
-__pycache__/
-.DS_Store
+
+# Ignore 2D and temporary datasets/outputs
 dataset/
-dataset_1d/*
-!dataset_1d/subset_metadata_2000.csv
-dataset_1d_heartbreaker/
 dataset_clean/
 dataset_skel/
 dataset_split/
@@ -17,7 +22,16 @@ eval_outputs/
 gradcam_outputs/
 notebooks/
 docs/
+dataset_1d/
+dataset_1d_heartbreaker/
 
-!binary_1d_ecg_model.h5
-!binary_1d_ecg_model_fold*.h5
-!clean_oof_ecg_probs.npy
+# Exclude metadata and model weights from ignore rules
+!data/subset_metadata_2000.csv
+!models/binary_1d_ecg_model.h5
+!models/binary_1d_ecg_model_fold*.h5
+!models/clean_oof_ecg_probs.npy
+
+# Exclude text result files in models from ignore rules
+!models/1d_model_results.txt
+!models/heartbreaker_results.txt
+!models/stress_test_results.txt

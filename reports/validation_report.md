@@ -189,14 +189,14 @@ CIs computed with 1,000 stratified bootstrap resamples (seed=42).
 
 | Figure | Description | File |
 |---|---|---|
-| Fig 1 | Per-fold bar chart (AUC, Sens, Spec) | `docs/figures/fig1_per_fold_performance.png` |
-| Fig 2 | OOF metrics with 95% CI | `docs/figures/fig2_oof_metrics_ci.png` |
-| Fig 3 | Confusion matrix (TN/FP/FN/TP) | `docs/figures/fig3_confusion_matrix.png` |
-| Fig 4 | Metric progression (3-stage journey) | `docs/figures/fig4_metric_progression.png` |
-| Fig 5 | ROC curve with operating point | `docs/figures/fig5_roc_curve.png` |
-| Fig 6 | 1D ResNet architecture diagram | `docs/figures/fig6_architecture.png` |
-| Fig 7 | 5-fold nested CV pipeline flowchart | `docs/figures/fig7_pipeline_flowchart.png` |
-| Fig 8 | Sensitivity vs Specificity scatter | `docs/figures/fig8_sens_spec_scatter.png` |
+| Fig 1 | Per-fold bar chart (AUC, Sens, Spec) | `figures/fig1_per_fold_performance.png` |
+| Fig 2 | OOF metrics with 95% CI | `figures/fig2_oof_metrics_ci.png` |
+| Fig 3 | Confusion matrix (TN/FP/FN/TP) | `figures/fig3_confusion_matrix.png` |
+| Fig 4 | Metric progression (3-stage journey) | `figures/fig4_metric_progression.png` |
+| Fig 5 | ROC curve with operating point | `figures/fig5_roc_curve.png` |
+| Fig 6 | 1D ResNet architecture diagram | `figures/fig6_architecture.png` |
+| Fig 7 | 5-fold nested CV pipeline flowchart | `figures/fig7_pipeline_flowchart.png` |
+| Fig 8 | Sensitivity vs Specificity scatter | `figures/fig8_sens_spec_scatter.png` |
 
 Figures regenerated from actual CV results:
 ```bash

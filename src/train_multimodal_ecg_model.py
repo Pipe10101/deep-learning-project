@@ -53,10 +53,10 @@ import scipy.signal as scipy_signal
 # ════════════════════════════════════════════════════════════════════════════
 # CONFIG
 # ════════════════════════════════════════════════════════════════════════════
-ECG_MODEL_PATH  = "binary_1d_ecg_model.h5"
+ECG_MODEL_PATH  = "models/binary_1d_ecg_model.h5"
 HEARTBREAKER_NAME = "Heartbreaker"
-META_CSV        = "dataset_1d/subset_metadata_2000.csv"
-SIGNAL_BASE_DIR = "dataset_1d/raw"
+META_CSV        = "data/subset_metadata_2000.csv"
+SIGNAL_BASE_DIR = "data/raw"
 INCLUDE_TEXT    = False       # set False to skip TF-IDF features (Structured Meta Only)
 TFIDF_FEATURES  = 80          # max TF-IDF terms after leakage audit
 N_FOLDS         = 5
@@ -341,7 +341,7 @@ def main():
 
     # ── 3. Load ECG encoder (frozen) ──────────────────────────────────
     # ── 3. Load ECG probabilities (from out-of-fold predictions to prevent leakage) ──
-    OOF_PROBS_PATH = "clean_oof_ecg_probs.npy"
+    OOF_PROBS_PATH = "models/clean_oof_ecg_probs.npy"
     if not os.path.exists(OOF_PROBS_PATH):
         print(f"\n[ERROR] OOF probabilities file not found: {OOF_PROBS_PATH}")
         print("  Run train_1d_ecg_model.py first to generate it.")
@@ -421,7 +421,7 @@ def main():
         print(f"  [Tier 2] Training embedding-level fusion MLP...")
 
         # Load fold-specific model to prevent target leakage in embedding extraction
-        fold_model_path = f"binary_1d_ecg_model_fold{fold+1}.h5"
+        fold_model_path = f"models/binary_1d_ecg_model_fold{fold+1}.h5"
         if not os.path.exists(fold_model_path):
             raise FileNotFoundError(f"Fold-specific model not found: {fold_model_path}")
         fold_encoder = load_ecg_encoder(fold_model_path)
@@ -533,8 +533,8 @@ def main():
         print(f"    → {verdict}")
 
     # ── 8. Save results ───────────────────────────────────────────────
-    os.makedirs("docs", exist_ok=True)
-    with open("docs/heartbreaker_results.txt", "w") as f:
+    os.makedirs("models", exist_ok=True)
+    with open("models/heartbreaker_results.txt", "w") as f:
         f.write(f"{HEARTBREAKER_NAME} — Multimodal ECG Model OOF Results\n")
         f.write("=" * 60 + "\n\n")
         f.write("ECG-Only Baseline:\n")
@@ -544,7 +544,7 @@ def main():
             f.write(f"\n{res['name']}:\n")
             for k in ["roc_auc", "pr_auc", "sensitivity", "specificity", "brier", "ece"]:
                 f.write(f"  {k}: {res[k]:.4f}\n")
-    print(f"\n  Results saved to docs/heartbreaker_results.txt")
+    print(f"\n  Results saved to models/heartbreaker_results.txt")
 
 
 if __name__ == "__main__":

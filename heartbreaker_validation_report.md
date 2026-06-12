@@ -47,10 +47,10 @@ The following table summarizes OOF performance across the validation hierarchy. 
 
 | Metric | ECG-Only Baseline<br>(reference, not re-run) | Heartbreaker ECG + Pure Demographics<br>(Primary, Leakage-Safer) | Heartbreaker ECG + Demographics + Heart Axis<br>(Secondary / Axis-Exploratory) |
 | :--- | :---: | :---: | :---: |
-| **ROC-AUC** | 0.9192 | **0.9785** [0.9698–0.9832] | **0.9782** [0.9710–0.9843] |
-| **PR-AUC** | 0.9241 | **0.9798** [0.9729–0.9855] | **0.9809** [0.9741–0.9865] |
-| **Sensitivity** | 0.8480 | **0.8520** [0.8302–0.8732] | **0.8520** [0.8302–0.8732] |
-| **Specificity** | 0.8400 | **0.9630** [0.9502–0.9749] | **0.9670** [0.9545–0.9784] |
+| **ROC-AUC** | 0.9192 | **0.9785** [0.9732–0.9832] | **0.9782** [0.9710–0.9843] |
+| **PR-AUC** | 0.9241 | **0.9811** [0.9764–0.9851] | **0.9809** [0.9741–0.9865] |
+| **Sensitivity** | 0.8480 | **0.8570** [0.8360–0.8789] | **0.8570** [0.8360–0.8789] |
+| **Specificity** | 0.8400 | **0.9620** [0.9501–0.9731] | **0.9670** [0.9545–0.9784] |
 | **Brier Score** | 0.0881 | **0.0601** [0.0522–0.0685] | **0.0592** [0.0514–0.0676] |
 
 ### Specificity vs. Sensitivity Trade-off

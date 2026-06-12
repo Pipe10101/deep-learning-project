@@ -93,7 +93,7 @@ All metrics are aggregated out-of-fold using Platt-calibrated predictions:
 | :--- | :---: | :---: | :---: | :--- |
 | **1D ResNet (ECG-Only)** | `0.9243 [95% CI: 0.9131–0.9350]` | `0.8580` | `0.8410` | Honest signal-only clinical baseline. |
 | **Primary Multimodal (ECG + Demographics)** | **`0.9238 [95% CI: 0.9114–0.9348]`** | **`0.8660`** | **`0.8090`** | Highly robust, leakage-safe probability fusion (Tier 1 LR). |
-| **Secondary Multimodal (MLP Fusion)** | `0.9218 [95% CI: 0.9099–0.9334]` | `0.8590` | `0.8360` | Embedding-level fusion MLP (Tier 2 MLP). |
+| **Secondary Multimodal (MLP Fusion)** | `0.9223 [95% CI: 0.9103–0.9341]` | `0.8560` | `0.8340` | Embedding-level fusion MLP (Tier 2 MLP). |
 | **Exploratory Multimodal (+ Report Text)** | `0.9565 [95% CI: 0.9482–0.9650]` | `0.8500` | `0.9320` | Structured + text (TF-IDF) (M7 report ablation ladder baseline). |
 
 ---

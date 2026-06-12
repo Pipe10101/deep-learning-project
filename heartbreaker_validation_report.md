@@ -13,9 +13,9 @@ The physiological 1D ResNet baseline model achieved an Out-Of-Fold (OOF) ROC-AUC
 
 Heartbreaker reuses the internally validated 2-block 1D ResNet as a frozen physiological encoder and fuses its outputs (either probabilities or embeddings) with clinical metadata. Following a rigorous methodology audit and stress-testing protocol, the model evaluation has been hardened to prevent proxy leakage and feature-provenance confounders:
 
-1. **Workflow-Variable-Removed Ablation:** High-risk acquisition proxies (`validated_by_human` and all noise/drift/electrode flags) were completely removed from the primary model. Specificity is **0.8090** (Tier 1 LR) and **0.8360** (Tier 2 MLP), and ROC-AUC is **0.9238** (Tier 1 LR) and **0.9218** (Tier 2 MLP), demonstrating that the model does not rely on workflow shortcuts and holds stable.
+1. **Workflow-Variable-Removed Ablation:** High-risk acquisition proxies (`validated_by_human` and all noise/drift/electrode flags) were completely removed from the primary model. Specificity is **0.8090** (Tier 1 LR) and **0.8340** (Tier 2 MLP), and ROC-AUC is **0.9238** (Tier 1 LR) and **0.9223** (Tier 2 MLP), demonstrating that the model does not rely on workflow shortcuts and holds stable.
 2. **Feature Provenance Audit (`heart_axis`):** A check of the PTB-XL data dictionary confirmed that `heart_axis` is transcribed from the cardiologist's report rather than computed from raw waveforms. Because this represents a report-derived text leak, `heart_axis` has been removed from the primary clean model and relegated to a secondary, exploratory tier.
-3. **Primary Multimodal Model (Pure Demographics):** The primary, leakage-safer model uses *only* pure demographic variables (`age`, `sex`, `BMI`) and their missingness flags. Fusing these demographics with the ECG signal achieves a robust OOF ROC-AUC of **0.9238 [95% CI: 0.9114–0.9348]** (Tier 1 LR) and **0.9218 [95% CI: 0.9099–0.9334]** (Tier 2 MLP), representing a highly defensible clinical-context integration.
+3. **Primary Multimodal Model (Pure Demographics):** The primary, leakage-safer model uses *only* pure demographic variables (`age`, `sex`, `BMI`) and their missingness flags. Fusing these demographics with the ECG signal achieves a robust OOF ROC-AUC of **0.9238 [95% CI: 0.9114–0.9348]** (Tier 1 LR) and **0.9223 [95% CI: 0.9103–0.9341]** (Tier 2 MLP), representing a highly defensible clinical-context integration.
 
 ---
 
@@ -109,8 +109,8 @@ Loaded ECG model: binary_1d_ecg_model_fold1.h5
   Input shape:  (None, 1000, 12)
   Output shape: (None, 1)
   Encoder output: 'global_average_pooling1d'  shape=(None, 128)
-    Tier-2 threshold: 0.3215
-    AUC=0.9239  Sens=0.8750  Spec=0.7950
+    Tier-2 threshold: 0.3417
+    AUC=0.9235  Sens=0.8700  Spec=0.7650
 
 ──────────────────────────────────────────────────
   Fold 2/5
@@ -125,8 +125,8 @@ Loaded ECG model: binary_1d_ecg_model_fold2.h5
   Input shape:  (None, 1000, 12)
   Output shape: (None, 1)
   Encoder output: 'global_average_pooling1d_1'  shape=(None, 128)
-    Tier-2 threshold: 0.6892
-    AUC=0.9360  Sens=0.8300  Spec=0.8850
+    Tier-2 threshold: 0.6808
+    AUC=0.9382  Sens=0.8400  Spec=0.8650
 
 ──────────────────────────────────────────────────
   Fold 3/5
@@ -141,8 +141,8 @@ Loaded ECG model: binary_1d_ecg_model_fold3.h5
   Input shape:  (None, 1000, 12)
   Output shape: (None, 1)
   Encoder output: 'global_average_pooling1d_2'  shape=(None, 128)
-    Tier-2 threshold: 0.3442
-    AUC=0.9430  Sens=0.8800  Spec=0.8300
+    Tier-2 threshold: 0.4161
+    AUC=0.9433  Sens=0.8700  Spec=0.8500
 
 ──────────────────────────────────────────────────
   Fold 4/5
@@ -157,8 +157,8 @@ Loaded ECG model: binary_1d_ecg_model_fold4.h5
   Input shape:  (None, 1000, 12)
   Output shape: (None, 1)
   Encoder output: 'global_average_pooling1d_3'  shape=(None, 128)
-    Tier-2 threshold: 0.5423
-    AUC=0.9254  Sens=0.8650  Spec=0.8450
+    Tier-2 threshold: 0.6006
+    AUC=0.9257  Sens=0.8450  Spec=0.8650
 
 ──────────────────────────────────────────────────
   Fold 5/5
@@ -173,18 +173,18 @@ Loaded ECG model: binary_1d_ecg_model_fold5.h5
   Input shape:  (None, 1000, 12)
   Output shape: (None, 1)
   Encoder output: 'global_average_pooling1d_4'  shape=(None, 128)
-    Tier-2 threshold: 0.2979
-    AUC=0.9158  Sens=0.8450  Spec=0.8250
+    Tier-2 threshold: 0.2807
+    AUC=0.9158  Sens=0.8550  Spec=0.8250
 
 ════════════════════════════════════════════════════════════
   AGGREGATE OOF RESULTS
 ════════════════════════════════════════════════════════════
 
   ── ECG-Only Baseline (reference, not re-run) ──
-  roc_auc: 0.9192
-  pr_auc: 0.9241
-  sensitivity: 0.8480
-  specificity: 0.8400
+  roc_auc: 0.9243
+  pr_auc: 0.9336
+  sensitivity: 0.8580
+  specificity: 0.8410
 
   ── Heartbreaker Tier 1 — Probability Fusion (LR) ──
   ROC-AUC:     0.9238  (95% CI: 0.9114–0.9348)
@@ -194,29 +194,29 @@ Loaded ECG model: binary_1d_ecg_model_fold5.h5
   Accuracy:    0.8375
   Brier:       0.1112  (95% CI: 0.1034–0.1198)
   ECE:         0.0492
-  vs ECG-only baseline:  ΔAUC=+0.0046  ΔSens=+0.0180  ΔSpec=-0.0310
+  vs ECG-only baseline:  ΔAUC=-0.0005  ΔSens=+0.0080  ΔSpec=-0.0320
 
   ── Heartbreaker Tier 2 — Embedding Fusion (MLP) ──
-  ROC-AUC:     0.9218  (95% CI: 0.9099–0.9334)
-  PR-AUC:      0.9238   (95% CI: 0.9088–0.9379)
-  Sensitivity: 0.8590  (95% CI: 0.8382–0.8799)
-  Specificity: 0.8360  (95% CI: 0.8140–0.8583)
-  Accuracy:    0.8475
-  Brier:       0.1106  (95% CI: 0.1014–0.1201)
-  ECE:         0.0449
-  vs ECG-only baseline:  ΔAUC=+0.0026  ΔSens=+0.0110  ΔSpec=-0.0040
+  ROC-AUC:     0.9223  (95% CI: 0.9103–0.9341)
+  PR-AUC:      0.9230   (95% CI: 0.9074–0.9371)
+  Sensitivity: 0.8560  (95% CI: 0.8337–0.8786)
+  Specificity: 0.8340  (95% CI: 0.8105–0.8576)
+  Accuracy:    0.8450
+  Brier:       0.1108  (95% CI: 0.1016–0.1205)
+  ECE:         0.0370
+  vs ECG-only baseline:  ΔAUC=-0.0020  ΔSens=-0.0020  ΔSpec=-0.0070
 
 ════════════════════════════════════════════════════════════
   ACCEPTANCE DECISION
 ════════════════════════════════════════════════════════════
 
   Heartbreaker Tier 1 — Probability Fusion (LR)
-    Sens ≥ 0.85: ✅  |  AUC↑: ✅  |  PR-AUC↑: ✅  |  Spec↑: —
-    → ✅ ACCEPT
+    Sens ≥ 0.85: ✅  |  AUC↑: —  |  PR-AUC↑: —  |  Spec↑: —
+    → ❌ REJECT
 
   Heartbreaker Tier 2 — Embedding Fusion (MLP)
-    Sens ≥ 0.85: ✅  |  AUC↑: ✅  |  PR-AUC↑: —  |  Spec↑: —
-    → ✅ ACCEPT
+    Sens ≥ 0.85: ✅  |  AUC↑: —  |  PR-AUC↑: —  |  Spec↑: —
+    → ❌ REJECT
 
   Results saved to docs/heartbreaker_results.txt
 ```

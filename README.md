@@ -56,6 +56,28 @@ All models are evaluated using a patient-disjoint 5-Fold Stratified Group K-Fold
 
 ---
 
+## 📈 Performance Visualizations
+
+### 🫀 1D ResNet ECG-Only Model
+
+| ROC Curve | Confusion Matrix |
+| :---: | :---: |
+| ![1D ECG ROC Curve](docs/figures/fig5_roc_curve.png) | ![1D ECG Confusion Matrix](docs/figures/fig3_confusion_matrix.png) |
+
+### ⚡ Heartbreaker Multimodal Fusion Model
+
+| Multimodal ROC Curve | Multimodal Confusion Matrix |
+| :---: | :---: |
+| ![Heartbreaker ROC Curve](docs/figures/hb_meta_fig3_roc_curve.png) | ![Heartbreaker Confusion Matrix](docs/figures/hb_meta_fig2_confusion_matrix.png) |
+
+### 🔍 Robustness & Ablation Analysis
+
+| Ablation Performance Ladder | Permutation Feature Importance |
+| :---: | :---: |
+| ![Ablation Ladder](docs/figures/ablation_ladder_chart.png) | ![Permutation Importance](docs/figures/permutation_test_chart.png) |
+
+---
+
 ## 📁 Core Repository Structure
 
 - **`train_1d_ecg_model.py`**: Builds, trains, and calibrates the 2-block 1D ResNet using raw signal waveforms.

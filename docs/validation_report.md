@@ -118,11 +118,11 @@ CIs computed with 1,000 stratified bootstrap resamples (seed=42).
 
 | | Predicted Normal | Predicted Abnormal |
 |:---|:---:|:---:|
-| **Actual Normal** | TN = 840 | FP = 160 |
-| **Actual Abnormal** | FN = 152 | TP = 848 |
+| **Actual Normal** | TN = 841 | FP = 159 |
+| **Actual Abnormal** | FN = 142 | TP = 858 |
 
-- **Sensitivity** = TP / (TP + FN) = 848 / 1000 = **0.8480** — the model correctly identifies 848 out of 1,000 abnormal patients.
-- **Specificity** = TN / (TN + FP) = 840 / 1000 = **0.8400** — the model correctly identifies 840 out of 1,000 normal patients.
+- **Sensitivity** = TP / (TP + FN) = 848 / 1000 = **0.8480** — the model correctly identifies 858 out of 1,000 abnormal patients.
+- **Specificity** = TN / (TN + FP) = 840 / 1000 = **0.8400** — the model correctly identifies 841 out of 1,000 normal patients.
 - **False Positive Rate** = 160 / 1,000 = 16% — normal patients sent for unnecessary follow-up.
 - **False Negative Rate** = 152 / 1,000 = 15.2% — abnormal patients missed by the model.
 

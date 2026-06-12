@@ -111,39 +111,67 @@ All metrics are aggregated out-of-fold using Platt-calibrated predictions:
 
 ### 🫀 1D ResNet ECG-Only Model
 
-| Architecture Diagram | Confusion Matrix |
-| :---: | :---: |
-| ![1D Architecture](reports/figures/fig6_architecture.png) | ![1D ECG Confusion Matrix](reports/figures/fig3_confusion_matrix.png) |
+**Architecture Diagram**
+<br>
+![1D Architecture](reports/figures/fig6_architecture.png)
+
+**Confusion Matrix**
+<br>
+![1D ECG Confusion Matrix](reports/figures/fig3_confusion_matrix.png)
 
 **ROC Curve Performance**
 <br>
 ![1D ECG ROC Curve](reports/figures/fig5_roc_curve.png)
 
+---
+
 ### ⚡ Heartbreaker Multimodal Fusion Model
 
-| Architecture Diagram | Confusion Matrix |
-| :---: | :---: |
-| ![Heartbreaker Architecture](reports/figures/hb_fig4_architecture.png) | ![Heartbreaker Confusion Matrix](reports/figures/hb_meta_fig2_confusion_matrix.png) |
+**Architecture Diagram**
+<br>
+![Heartbreaker Architecture](reports/figures/hb_fig4_architecture.png)
+
+**Confusion Matrix**
+<br>
+![Heartbreaker Confusion Matrix](reports/figures/hb_meta_fig2_confusion_matrix.png)
 
 **ROC Curve Performance**
 <br>
 ![Heartbreaker ROC Curve](reports/figures/hb_meta_fig3_roc_curve.png)
 
+---
+
 ### 🩺 Multiclass 5-Label Model
 
-| Architecture Diagram | Confusion Matrices |
-| :---: | :---: |
-| ![1D Architecture](reports/figures/fig6_architecture.png)<br>*(Dense 5 Sigmoid Output)* | ![Multiclass CM](reports/figures/multiclass_confusion_matrix.png) |
+**Architecture Diagram**
+<br>
+*(Uses the 1D ResNet backbone but with a Dense 5 Sigmoid Output layer)*
+<br>
+![1D Architecture](reports/figures/fig6_architecture.png)
 
-| ROC Curves | PR Curves |
-| :---: | :---: |
-| ![Multiclass ROC](reports/figures/multiclass_roc_curve.png) | ![Multiclass PR](reports/figures/multiclass_pr_curve.png) |
+**Confusion Matrices (Per Class)**
+<br>
+![Multiclass CM](reports/figures/multiclass_confusion_matrix.png)
+
+**ROC Curves**
+<br>
+![Multiclass ROC](reports/figures/multiclass_roc_curve.png)
+
+**Precision-Recall (PR) Curves**
+<br>
+![Multiclass PR](reports/figures/multiclass_pr_curve.png)
+
+---
 
 ### 🔍 Robustness & Ablation Analysis
 
-| Ablation Performance Ladder | Permutation Feature Importance |
-| :---: | :---: |
-| ![Ablation Ladder](reports/figures/ablation_ladder_chart.png) | ![Permutation Importance](reports/figures/permutation_test_chart.png) |
+**Ablation Performance Ladder**
+<br>
+![Ablation Ladder](reports/figures/ablation_ladder_chart.png)
+
+**Permutation Feature Importance**
+<br>
+![Permutation Importance](reports/figures/permutation_test_chart.png)
 
 ---
 

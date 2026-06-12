@@ -22,7 +22,7 @@ st.markdown("<div class='subtitle'>Valid, Single-Source Diagnostic Model trained
 
 @st.cache_resource
 def load_model():
-    model_path = '/Users/felipedeleon/Desktop/Deep Ler,Project/binary_1d_ecg_model.h5'
+    model_path = 'binary_1d_ecg_model.h5'
     if os.path.exists(model_path):
         return tf.keras.models.load_model(model_path)
     return None

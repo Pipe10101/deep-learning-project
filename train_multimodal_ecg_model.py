@@ -42,6 +42,7 @@ from multimodal_data_prep import (
     build_metadata_matrix,
     fit_metadata_preprocessors,
     apply_metadata_preprocessors,
+    load_and_cache_dataset,
 )
 
 # ── Re-use preprocessing from the ECG-only pipeline ──────────────────────
@@ -328,18 +329,8 @@ def main():
     df_meta_csv = pd.read_csv(META_CSV)
 
     # ── 2. Load raw ECG signals ───────────────────────────────────────
-    print("\nLoading raw ECG signals...")
-    X_signals, valid_indices = [], []
-    for i, row in df_meta_csv.iterrows():
-        path = os.path.join(SIGNAL_BASE_DIR, row["filename_lr"])
-        sig  = load_signal(path)
-        if sig is not None:
-            X_signals.append(sig)
-            valid_indices.append(i)
-        if (len(valid_indices)) % 400 == 0 and len(valid_indices) > 0:
-            print(f"  Loaded {len(valid_indices)} signals...")
+    X_signals, _, valid_indices = load_and_cache_dataset(META_CSV, SIGNAL_BASE_DIR)
 
-    X_signals   = np.array(X_signals, dtype=np.float32)
     valid_mask  = np.array(valid_indices)
     y           = y[valid_mask]
     patient_ids = patient_ids[valid_mask]

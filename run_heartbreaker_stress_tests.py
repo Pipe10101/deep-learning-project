@@ -19,9 +19,9 @@ from multimodal_data_prep import (
     build_metadata_matrix,
     fit_metadata_preprocessors,
     apply_metadata_preprocessors,
+    load_and_cache_dataset,
 )
 from train_multimodal_ecg_model import (
-    load_signal,
     load_ecg_encoder,
     platt_calibrate_and_threshold,
     bootstrap_ci
@@ -74,15 +74,8 @@ def main():
     np.random.seed(RANDOM_STATE)
     df_static["random_noise"] = np.random.normal(size=len(df_static))
 
-    X_signals, valid_indices = [], []
-    for i, row in df_meta_csv.iterrows():
-        path = os.path.join(SIGNAL_BASE_DIR, row["filename_lr"])
-        sig  = load_signal(path)
-        if sig is not None:
-            X_signals.append(sig)
-            valid_indices.append(i)
+    X_signals, _, valid_indices = load_and_cache_dataset(META_CSV, SIGNAL_BASE_DIR)
     
-    X_signals = np.array(X_signals, dtype=np.float32)
     valid_mask = np.array(valid_indices)
     y = y[valid_mask]
     df_static = df_static.iloc[valid_mask].reset_index(drop=True)

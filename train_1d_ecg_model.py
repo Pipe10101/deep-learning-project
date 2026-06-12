@@ -8,6 +8,7 @@ from tensorflow.keras import layers, models, callbacks
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.metrics import roc_auc_score, accuracy_score, classification_report, confusion_matrix, roc_curve, average_precision_score
 from sklearn.linear_model import LogisticRegression
+from multimodal_data_prep import load_and_cache_dataset
 
 def load_and_preprocess_signal(record_path):
     try:
@@ -173,38 +174,13 @@ def compute_bootstrap_ci(y_true, y_pred_probs, y_pred_classes, n_bootstraps=1000
 
 def main():
     metadata_path = 'dataset_1d/subset_metadata_2000.csv'
-    if not os.path.exists(metadata_path):
-        print(f"Error: Metadata file {metadata_path} not found.")
-        return
-        
-    df = pd.read_csv(metadata_path)
     base_dir = 'dataset_1d/raw'
     
-    X = []
-    y = []
-    
-    print("Loading and preprocessing signals...")
-    for idx, row in df.iterrows():
-        record_name = row['filename_lr']
-        record_path = os.path.join(base_dir, record_name)
-        if os.path.exists(record_path + ".dat"):
-            sig = load_and_preprocess_signal(record_path)
-            if sig is not None:
-                X.append(sig)
-                y.append(0 if row['class'] == 'Normal' else 1)
-        
-        if (idx+1) % 200 == 0:
-            print(f"Processed {idx+1}/{len(df)}...")
-
-    X = np.array(X)
-    y = np.array(y)
+    X, y, _ = load_and_cache_dataset(metadata_path, base_dir)
     
     if len(X) == 0:
         print("No valid signals loaded.")
         return
-        
-    print(f"Total samples loaded: {len(X)}")
-    print(f"Normal: {np.sum(y == 0)}, Abnormal: {np.sum(y == 1)}")
     
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     
@@ -280,7 +256,7 @@ def main():
         oof_preds_class[test_idx] = y_test_preds
         
     print("\n=====================================")
-    print("Aggregate Out-Of-Fold (OOF) Results (N=200):")
+    print("Aggregate Out-Of-Fold (OOF) Results (N=2000):")
     
     auc = roc_auc_score(y, oof_probs_cal)
     pr_auc = average_precision_score(y, oof_probs_cal)
@@ -312,7 +288,7 @@ def main():
         f.write(f"OOF Sensitivity (Recall of Abnormal): {sens:.4f} (95% CI: {ci['sens_ci'][0]:.4f} - {ci['sens_ci'][1]:.4f})\n")
         f.write(f"OOF Specificity: {spec:.4f} (95% CI: {ci['spec_ci'][0]:.4f} - {ci['spec_ci'][1]:.4f})\n")
         
-    print("\nTraining final model on full 200 records...")
+    print("\nTraining final model on full 2000 records...")
     final_model = build_smaller_resnet_1d()
     final_train_gen = ECGDataGenerator(X, y, batch_size=32, shuffle=True, augment=True)
     
@@ -321,7 +297,7 @@ def main():
         epochs=40,
         verbose=0
     )
-    final_model.save('/Users/felipedeleon/Desktop/Deep Ler,Project/binary_1d_ecg_model.h5')
+    final_model.save('binary_1d_ecg_model.h5')
     print("Final model saved successfully.")
     
 if __name__ == '__main__':

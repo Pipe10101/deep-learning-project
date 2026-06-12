@@ -15,8 +15,11 @@ fits them inside each CV fold on training data only.
 """
 
 import re
+import os
 import numpy as np
 import pandas as pd
+import wfdb
+import scipy.signal as scipy_signal
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -251,6 +254,70 @@ def apply_metadata_preprocessors(X_static: pd.DataFrame,
         return np.hstack([X_scaled, X_tfidf_clean])
 
     return X_scaled
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# 5. Shared ECG signal loading and dataset caching (Instant sub-second loading)
+# ────────────────────────────────────────────────────────────────────────────
+
+def load_and_preprocess_single_signal(record_path: str, fs: int = 100, length: int = 1000) -> np.ndarray:
+    """Loads and filters a single 12-lead ECG signal trace (0.5-40Hz butterworth + Z-norm)."""
+    try:
+        record = wfdb.rdrecord(record_path)
+        sig = record.p_signal.astype(np.float32)
+        nyq = 0.5 * fs
+        b, a = scipy_signal.butter(4, [0.5/nyq, 40.0/nyq], btype="band")
+        filtered = np.zeros_like(sig)
+        for ch in range(sig.shape[1]):
+            filtered[:, ch] = scipy_signal.filtfilt(b, a, sig[:, ch])
+        mn, sd = filtered.mean(0), filtered.std(0)
+        sd[sd == 0] = 1.0
+        norm = (filtered - mn) / sd
+        if norm.shape[0] >= length:
+            return norm[:length, :]
+        return np.vstack([norm, np.zeros((length - norm.shape[0], 12))])
+    except Exception as e:
+        print(f"  [signal error] {record_path}: {e}")
+        return None
+
+
+def load_and_cache_dataset(metadata_csv: str, raw_dir: str, cache_path: str = "dataset_1d/processed_signals_2000.npz") -> tuple:
+    """
+    Checks if a processed numpy cache exists. If yes, loads it instantly.
+    If not, processes raw signals, saves to cache, and returns arrays.
+    """
+    if os.path.exists(cache_path):
+        print(f"  [cache] Loading preprocessed signals from {cache_path}...")
+        data = np.load(cache_path)
+        return data["X"], data["y"], data["valid_indices"]
+
+    print(f"  [cache] Processing raw signals from {raw_dir} (will create cache)...")
+    df = pd.read_csv(metadata_csv)
+    X = []
+    y = []
+    valid_indices = []
+
+    for idx, row in df.iterrows():
+        record_name = row['filename_lr']
+        record_path = os.path.join(raw_dir, record_name)
+        if os.path.exists(record_path + ".dat"):
+            sig = load_and_preprocess_single_signal(record_path)
+            if sig is not None:
+                X.append(sig)
+                y.append(0 if row['class'] == 'Normal' else 1)
+                valid_indices.append(idx)
+
+        if (idx + 1) % 200 == 0:
+            print(f"  Processed {idx + 1}/{len(df)}...")
+
+    X = np.array(X, dtype=np.float32)
+    y = np.array(y, dtype=np.int32)
+    valid_indices = np.array(valid_indices, dtype=np.int32)
+
+    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    np.savez_compressed(cache_path, X=X, y=y, valid_indices=valid_indices)
+    print(f"  [cache] Saved preprocessed dataset to cache: {cache_path}")
+    return X, y, valid_indices
 
 
 # ────────────────────────────────────────────────────────────────────────────

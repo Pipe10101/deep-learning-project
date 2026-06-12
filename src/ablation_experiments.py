@@ -160,8 +160,8 @@ def run_experiment(X, y, class_weight_val, min_sensitivity, label):
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    metadata_path = 'dataset_1d/subset_metadata.csv'
-    base_dir      = 'dataset_1d/raw'
+    metadata_path = 'data/subset_metadata_2000.csv'
+    base_dir      = 'data/raw'
 
     df = pd.read_csv(metadata_path)
     X, y = [], []
@@ -213,8 +213,8 @@ def main():
           f"Sens {best['sensitivity']}  Spec {best['specificity']}")
 
     # Save results
-    os.makedirs('docs', exist_ok=True)
-    with open('docs/ablation_results.txt', 'w') as f:
+    os.makedirs('reports', exist_ok=True)
+    with open('reports/ablation_results.txt', 'w') as f:
         f.write("ECG 1D-CNN Ablation Experiments\n")
         f.write("="*80 + "\n")
         f.write(header + "\n" + "-"*80 + "\n")
@@ -226,7 +226,7 @@ def main():
         f.write(f"\nBest balanced: Experiment {best['experiment']}\n")
         f.write(f"ROC-AUC {best['roc_auc']} | "
                 f"Sens {best['sensitivity']} | Spec {best['specificity']}\n")
-    print("\nResults saved to docs/ablation_results.txt")
+    print("\nResults saved to reports/ablation_results.txt")
 
 if __name__ == '__main__':
     main()

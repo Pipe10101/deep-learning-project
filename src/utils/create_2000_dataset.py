@@ -37,8 +37,8 @@ def main():
     subset = pd.concat([normals, abnormals]).reset_index(drop=True)
     print(f"Selected {len(subset)} records (100Hz)...")
     
-    subset.to_csv("dataset_1d/subset_metadata_2000.csv", index=False)
-    print("Saved to dataset_1d/subset_metadata_2000.csv")
+    subset.to_csv("data/subset_metadata_2000.csv", index=False)
+    print("Saved to data/subset_metadata_2000.csv")
 
 if __name__ == '__main__':
     main()

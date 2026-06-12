@@ -100,7 +100,7 @@ def build_encoder(input_shape=(1000, 12), dim=128):
     emb = layers.Dense(dim)(x)
     return keras.Model(inp, emb, name="encoder")
 
-def build_classifier(encoder_weights="ecg_ssl_encoder.h5", trainable_backbone=False):
+def build_classifier(encoder_weights="models/ecg_ssl_encoder.h5", trainable_backbone=False):
     encoder = build_encoder()
     encoder.load_weights(encoder_weights)
     encoder.trainable = trainable_backbone
@@ -125,11 +125,11 @@ def boot_ci(y, p, fn, n=1000, seed=42):
 
 def main():
     print("Loading labeled signals...")
-    df = pd.read_csv("dataset_1d/subset_metadata.csv")
+    df = pd.read_csv("data/subset_metadata.csv")
     
     X, y, pids = [], [], []
     for i, row in df.iterrows():
-        sig = load_signal(f"dataset_1d/raw/{row['filename_lr']}")
+        sig = load_signal(f"data/raw/{row['filename_lr']}")
         X.append(sig)
         y.append(1 if row['class'] == 'Abnormal' else 0)
         pids.append(row['patient_id'])
@@ -158,7 +158,7 @@ def main():
         X_val, y_val = X_train_full[-n_val:], y_train_full[-n_val:]
         
         # Phase 1: Linear Probe
-        model, encoder = build_classifier("ecg_ssl_encoder.h5", trainable_backbone=False)
+        model, encoder = build_classifier("models/ecg_ssl_encoder.h5", trainable_backbone=False)
         model.compile(optimizer=keras.optimizers.Adam(1e-3),
                       loss=keras.losses.BinaryCrossentropy(label_smoothing=0.05),
                       metrics=[keras.metrics.AUC(name="auc")])

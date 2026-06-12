@@ -132,14 +132,14 @@ def data_generator(pretrain_meta, base_dir, batch_size=64):
                 batch_x = []
 
 def main():
-    pretrain_meta_path = 'dataset_1d/pretrain_metadata.csv'
+    pretrain_meta_path = 'data/pretrain_metadata.csv'
     if not os.path.exists(pretrain_meta_path):
         print("Run download_ptbxl_pretrain.py first!")
         return
         
     pretrain_meta = pd.read_csv(pretrain_meta_path)
     
-    eval_meta = pd.read_csv('dataset_1d/subset_metadata.csv')
+    eval_meta = pd.read_csv('data/subset_metadata.csv')
     eval_patients = set(eval_meta['patient_id'].unique())
     
     assert len(set(pretrain_meta.patient_id) & eval_patients) == 0, "LEAKAGE: eval patients present in pretraining pool"
@@ -161,7 +161,7 @@ def main():
         opt.apply_gradients(zip(tape.gradient(loss, vars_), vars_))
         return loss
 
-    base_dir = 'dataset_1d/raw'
+    base_dir = 'data/raw'
     batch_size = 64
     epochs = 40
     
@@ -182,8 +182,9 @@ def main():
                 print(f"Epoch {epoch+1}, Step {step}/{steps_per_epoch}, Loss: {float(loss):.4f}")
         print(f"--- Epoch {epoch+1} Complete. Avg Loss: {epoch_loss/steps_per_epoch:.4f}")
         
-    encoder.save_weights("ecg_ssl_encoder.h5")
-    print("Pretraining complete. Saved to ecg_ssl_encoder.h5.")
+    os.makedirs('models', exist_ok=True)
+    encoder.save_weights("models/ecg_ssl_encoder.h5")
+    print("Pretraining complete. Saved to models/ecg_ssl_encoder.h5.")
 
 if __name__ == '__main__':
     main()

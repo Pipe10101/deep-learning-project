@@ -71,13 +71,13 @@ def main():
     assert len(subset) == 200, "Error: Subset size is not 200!"
     
     # Save metadata
-    os.makedirs('dataset_1d', exist_ok=True)
-    subset.to_csv("dataset_1d/subset_metadata.csv", index=False)
-    print("Saved metadata to dataset_1d/subset_metadata.csv")
+    os.makedirs('data', exist_ok=True)
+    subset.to_csv("data/subset_metadata.csv", index=False)
+    print("Saved metadata to data/subset_metadata.csv")
     
     # Download missing files
     base_url = "https://physionet.org/files/ptb-xl/1.0.3/"
-    out_dir = "dataset_1d/raw"
+    out_dir = "data/raw"
     os.makedirs(out_dir, exist_ok=True)
     
     print("Downloading raw signals...")

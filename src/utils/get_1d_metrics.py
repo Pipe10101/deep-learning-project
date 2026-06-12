@@ -27,9 +27,9 @@ def load_and_preprocess_signal(record_path):
     return norm_sig
 
 def main():
-    metadata_path = 'dataset_1d/subset_metadata.csv'
+    metadata_path = 'data/subset_metadata_2000.csv'
     df = pd.read_csv(metadata_path)
-    base_dir = 'dataset_1d/raw'
+    base_dir = 'data/raw'
     
     X = []
     y = []
@@ -46,7 +46,7 @@ def main():
     X = np.array(X)
     y = np.array(y)
     
-    model = tf.keras.models.load_model('binary_1d_ecg_model.h5')
+    model = tf.keras.models.load_model('models/binary_1d_ecg_model.h5')
     y_prob = model.predict(X).flatten()
     
     roc_auc = roc_auc_score(y, y_prob)

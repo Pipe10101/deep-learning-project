@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import StratifiedKFold
@@ -8,8 +10,8 @@ from heartbreaker_end_to_end import build_1d_resnet
 import warnings
 warnings.filterwarnings("ignore")
 
-META_CSV = "dataset_1d/subset_metadata_2000.csv"
-SIGNAL_BASE_DIR = "dataset_1d/raw"
+META_CSV = "data/subset_metadata_2000.csv"
+SIGNAL_BASE_DIR = "data/raw"
 N_FOLDS = 5
 RANDOM_STATE = 42
 
@@ -36,5 +38,5 @@ for fold, (train_idx, test_idx) in enumerate(skf.split(X_signals, y)):
               validation_split=0.1, callbacks=[tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)])
     oof_ecg_probs[test_idx] = model.predict(X_signals[test_idx], verbose=0).flatten()
 
-np.save("clean_oof_ecg_probs.npy", oof_ecg_probs)
-print("Saved clean_oof_ecg_probs.npy")
+np.save("models/clean_oof_ecg_probs.npy", oof_ecg_probs)
+print("Saved models/clean_oof_ecg_probs.npy")

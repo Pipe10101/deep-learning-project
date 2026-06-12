@@ -19,7 +19,7 @@ def main():
     meta = pd.read_csv('ptbxl_database.csv')
     
     # Load the evaluation set
-    eval_meta = pd.read_csv('dataset_1d/subset_metadata.csv')
+    eval_meta = pd.read_csv('data/subset_metadata.csv')
     eval_patients = set(eval_meta['patient_id'].unique())
     
     # Filter out eval patients
@@ -30,10 +30,10 @@ def main():
     print(f"Pretrain pool: {len(pretrain_meta)} records, {pretrain_meta.patient_id.nunique()} patients — disjoint from eval. OK")
     
     base_url = "https://physionet.org/files/ptb-xl/1.0.3/"
-    out_dir = "dataset_1d/raw"
+    out_dir = "data/raw"
     os.makedirs(out_dir, exist_ok=True)
     
-    pretrain_meta.to_csv("dataset_1d/pretrain_metadata.csv", index=False)
+    pretrain_meta.to_csv("data/pretrain_metadata.csv", index=False)
     
     download_tasks = []
     

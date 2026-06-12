@@ -37,7 +37,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-DATA_DIR = "dataset_1d_heartbreaker"
+DATA_DIR = "data"
 RAW_DIR = os.path.join(DATA_DIR, "raw")
 os.makedirs(RAW_DIR, exist_ok=True)
 

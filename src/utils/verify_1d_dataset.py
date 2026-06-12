@@ -1,7 +1,7 @@
 import pandas as pd
 import ast
 
-df = pd.read_csv('dataset_1d/subset_metadata.csv')
+df = pd.read_csv('data/subset_metadata_2000.csv')
 
 print(f"Total records: {len(df)}")
 print(f"Unique ecg_ids: {df['ecg_id'].nunique()}")

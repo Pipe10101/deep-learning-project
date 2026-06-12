@@ -4,8 +4,8 @@ import os
 print("=== DATA INTEGRITY AUDIT ===")
 
 # 1. Check 1D Dataset Subset
-if os.path.exists("dataset_1d/subset_metadata_2000.csv"):
-    df_1d = pd.read_csv("dataset_1d/subset_metadata_2000.csv")
+if os.path.exists("data/subset_metadata_2000.csv"):
+    df_1d = pd.read_csv("data/subset_metadata_2000.csv")
     print(f"\n[1D Dataset (Subset 2000)] Total records: {len(df_1d)}")
     n_unique_patients = df_1d['patient_id'].nunique()
     print(f"Unique patients: {n_unique_patients}")
@@ -22,7 +22,7 @@ if os.path.exists("dataset_1d/subset_metadata_2000.csv"):
     else:
         print("Missing 'strat_fold'.")
 else:
-    print("dataset_1d/subset_metadata_2000.csv not found.")
+    print("data/subset_metadata_2000.csv not found.")
 
 # 2. Check 2D Dataset (if it exists)
 if os.path.exists("metadata.csv"):

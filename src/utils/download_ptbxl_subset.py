@@ -39,10 +39,10 @@ def main():
     print(f"Downloading {len(subset)} records (100Hz)...")
     
     base_url = "https://physionet.org/files/ptb-xl/1.0.3/"
-    out_dir = "dataset_1d/raw"
+    out_dir = "data/raw"
     os.makedirs(out_dir, exist_ok=True)
     
-    subset.to_csv("dataset_1d/subset_metadata.csv", index=False)
+    subset.to_csv("data/subset_metadata.csv", index=False)
     
     for i, row in tqdm(subset.iterrows(), total=len(subset)):
         filename_lr = row['filename_lr']

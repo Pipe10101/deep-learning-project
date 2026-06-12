@@ -22,6 +22,7 @@ eval_outputs/
 gradcam_outputs/
 notebooks/
 docs/
+data/
 dataset_1d/
 dataset_1d_heartbreaker/
 

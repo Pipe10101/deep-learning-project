@@ -8,6 +8,7 @@ The repository maintains two distinct, complementary pipelines:
 
 1. **The 1D Physiological Pipeline (ECG-Only):** An automated pipeline operating on raw 12-lead signal waveforms from a single clinical source (PTB-XL). Utilizing a 1D ResNet, Binary Focal Loss, and Out-of-Fold (OOF) Platt Scaling, this pipeline achieves an honest, confound-free cross-validated ROC-AUC of **0.9243**.
 2. **The Multimodal Fusion Pipeline (Heartbreaker):** An advanced late-fusion architecture that leverages the frozen 1D ResNet features combined with patient demographic features (age, sex, BMI) to maximize classification sensitivity and specificity. The primary multimodal model achieves an OOF ROC-AUC of **0.9238** (Tier 1 LR) and **0.9218** (Tier 2 MLP).
+3. **The Multiclass Pipeline (Multi-Label 1D ResNet):** A 5-class multi-label extension capable of predicting NORM, MI, STTC, CD, and HYP simultaneously using `binary_crossentropy` and sigmoid activation, built entirely on patient-disjoint metadata.
 
 ---
 

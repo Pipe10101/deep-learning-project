@@ -22,21 +22,26 @@ eval_outputs/
 gradcam_outputs/
 notebooks/
 docs/
-data/
+data/*
 dataset_1d/
 dataset_1d_heartbreaker/
 
 # Exclude metadata and model weights from ignore rules
 !data/subset_metadata_2000.csv
 !data/subset_multiclass_metadata.csv
+!data/clinical_features.csv
 !models/binary_1d_ecg_model.h5
 !models/binary_1d_ecg_model_fold*.h5
 !models/multiclass_1d_ecg_model.h5
 !models/clean_oof_ecg_probs.npy
 !models/clean_oof_multiclass_probs.npy
+!models/lightgbm_oof_multiclass_probs.npy
 
 # Exclude text result files in models from ignore rules
 !models/1d_model_results.txt
 !models/heartbreaker_results.txt
 !models/stress_test_results.txt
 !models/multiclass_results.txt
+!models/lightgbm_multiclass_results.txt
+!models/lightgbm_feature_importances.json
+!models/multiclass_thresholds*.json

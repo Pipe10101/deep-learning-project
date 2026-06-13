@@ -8,8 +8,6 @@ def main():
     scp_df = scp_df[scp_df.diagnostic == 1.0]
     
     # Mapping from detailed scp code to 5 superclasses (NORM, MI, STTC, CD, HYP)
-    # The index is the scp_code (like 'NDT', 'NORM', etc.)
-    # The column is 'diagnostic_class'
     scp_to_class = scp_df['diagnostic_class'].dropna().to_dict()
     
     print("Reading ptbxl_database.csv...")
@@ -39,31 +37,33 @@ def main():
     for sc in superclasses:
         df[f'label_{sc}'] = df['diagnostic_classes'].apply(lambda x: 1 if sc in x else 0)
         
-    print(f"Total available records with a valid superclass: {len(df)}")
+    print(f"Total records with a valid superclass (before signal check): {len(df)}")
     
-    # Stratified sampling to ensure enough representation
-    # Let's target 1000 records where each class is present
-    samples = []
-    sampled_indices = set()
-    for sc in superclasses:
-        # Get all available for this class that haven't been sampled yet
-        pool = df[(df[f'label_{sc}'] == 1) & (~df.index.isin(sampled_indices))]
-        n_sample = min(len(pool), 1000)
-        sc_sample = pool.sample(n=n_sample, random_state=42)
-        samples.append(sc_sample)
-        sampled_indices.update(sc_sample.index)
-        
-    subset = pd.concat(samples).reset_index(drop=True)
-    # Re-shuffle the final dataset
+    # --- KEY CHANGE: Use ALL records that have signal files on disk ---
+    base_dir = 'data/raw'
+    valid_rows = []
+    missing = 0
+    for _, row in df.iterrows():
+        file_path = os.path.join(base_dir, row['filename_lr'] + '.dat')
+        if os.path.exists(file_path):
+            valid_rows.append(row)
+        else:
+            missing += 1
+            
+    subset = pd.DataFrame(valid_rows).reset_index(drop=True)
+    
+    # Shuffle the final dataset
     subset = subset.sample(frac=1.0, random_state=42).reset_index(drop=True)
     
-    print(f"Selected {len(subset)} unique patient records for Multiclass MVP.")
+    print(f"\nSignals found on disk: {len(subset)}")
+    print(f"Signals missing (not downloaded): {missing}")
+    print(f"\nFinal dataset: {len(subset)} unique patient records")
     for sc in superclasses:
         print(f"  {sc} count: {subset[f'label_{sc}'].sum()}")
         
     os.makedirs('data', exist_ok=True)
     subset.to_csv("data/subset_multiclass_metadata.csv", index=False)
-    print("Saved to data/subset_multiclass_metadata.csv")
+    print("\nSaved to data/subset_multiclass_metadata.csv")
 
 if __name__ == '__main__':
     main()

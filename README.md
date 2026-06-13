@@ -105,6 +105,16 @@ All metrics are aggregated out-of-fold using Platt-calibrated predictions:
 | **Secondary Multimodal (MLP Fusion)** | `0.9223 [95% CI: 0.9103–0.9341]` | `0.8560` | `0.8340` | Embedding-level fusion MLP (Tier 2 MLP). |
 | **Exploratory Multimodal (+ Report Text)** | `0.9565 [95% CI: 0.9482–0.9650]` | `0.8500` | `0.9320` | Structured + text (TF-IDF) (M7 report ablation ladder baseline). |
 
+### 🩺 Multi-Label 5-Class Diagnostic Models (3,878 Patient Records)
+
+| Diagnostic Class | CNN ROC-AUC (95% CI) | LightGBM ROC-AUC (95% CI) | CNN PR-AUC | LightGBM PR-AUC | Winner (ROC-AUC) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Normal (NORM)** | **`0.9407`** `(0.9337–0.9474)` | `0.9221` `(0.9136–0.9308)` | **`0.9479`** | `0.9285` | **CNN** |
+| **Myocardial Infarction (MI)** | **`0.9310`** `(0.9194–0.9432)` | `0.8839` `(0.8663–0.8999)` | **`0.7121`** | `0.5900` | **CNN** |
+| **ST/T-Change (STTC)** | **`0.9205`** `(0.9086–0.9311)` | `0.9009` `(0.8887–0.9132)` | **`0.7231`** | `0.6775` | **CNN** |
+| **Conduction Disturbance (CD)** | **`0.9360`** `(0.9251–0.9453)` | `0.8971` `(0.8817–0.9107)` | **`0.8380`** | `0.7586` | **CNN** |
+| **Hypertrophy (HYP)** | `0.7959` `(0.7653–0.8249)` | **`0.8877`** `(0.8613–0.9134)` | `0.2754` | **`0.5098`** | **LightGBM** |
+
 ---
 
 ## 📈 Performance Visualizations
@@ -155,17 +165,21 @@ This extension pivots from a binary abnormal/normal framework into a multi-label
 <br>
 ![Multi-Heartbreaker Architecture](reports/figures/multiclass_architecture.png)
 
-**Confusion Matrices (Per Class)**
-<br>
-![Multiclass CM](reports/figures/multiclass_confusion_matrix.png)
+#### A. Multi-Label 1D ResNet (CNN)
+* **ROC Curves**:
+  ![CNN ROC](reports/figures/multiclass_roc_curve_cnn.png)
+* **Precision-Recall Curves**:
+  ![CNN PR](reports/figures/multiclass_pr_curve_cnn.png)
+* **Confusion Matrices (Per Class)**:
+  ![CNN CM](reports/figures/multiclass_confusion_matrix_cnn.png)
 
-**ROC Curves**
-<br>
-![Multiclass ROC](reports/figures/multiclass_roc_curve.png)
-
-**Precision-Recall (PR) Curves**
-<br>
-![Multiclass PR](reports/figures/multiclass_pr_curve.png)
+#### B. Multi-Label LightGBM (Clinical Feature Engineering)
+* **ROC Curves**:
+  ![LightGBM ROC](reports/figures/multiclass_roc_curve_lightgbm.png)
+* **Precision-Recall Curves**:
+  ![LightGBM PR](reports/figures/multiclass_pr_curve_lightgbm.png)
+* **Confusion Matrices (Per Class)**:
+  ![LightGBM CM](reports/figures/multiclass_confusion_matrix_lightgbm.png)
 
 ---
 

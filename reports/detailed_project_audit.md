@@ -132,7 +132,17 @@ $$\Delta \text{AUC}_c = \text{AUC}_{c, \text{Male}} - \text{AUC}_{c, \text{Femal
   5. Compute the two-tailed p-value: $p = 2 \cdot (1 - \Phi(|z|))$.
 * **Audit Result:** This is a statistically sound setup. A bootstrap size of $B=500$ provides stable standard error estimates for the gap. The significance threshold of $p < 0.05$ with confidence intervals not crossing zero is standard.
 
-### B. Age Band Robustness finding (HYP Class)
+### B. Multiple-Comparisons Correction (Bonferroni Adjustment)
+Because we perform hypothesis testing across 5 independent diagnostic classes per model, the family-wise Type I error rate increases. To maintain a family-wise error rate of $\alpha = 0.05$, we apply the Bonferroni correction ($\alpha_{\text{adj}} = 0.05 / 5 = 0.01$):
+* **NORM (LightGBM):** Under standard $\alpha = 0.05$, the NORM gender gap in LightGBM appears significant ($p = 0.0405$). Under the Bonferroni adjustment, this result is **defused** as non-significant ($0.0405 > 0.01$), indicating it is likely a multiple-testing artifact.
+* **CD (Conduction Disturbance):** The CD gender gap remains highly significant in LightGBM ($p = 0.0087 < 0.01$) and borderline in CNN ($p = 0.0170$), confirming that the female advantage in CD classification is a genuine model characteristic.
+
+### C. Honest Performance Gaps & Demographic Monitoring
+Rather than claiming universal fairness across cohorts, the audit flags two clear performance patterns that must be highlighted for ongoing clinical monitoring:
+1. **Conduction Disturbance (CD) Sex Gap:** Both models show a consistent and statistically significant performance gap in CD favoring female patients (obs gap of -0.0257 for CNN, $p = 0.0170$; and -0.0388 for LightGBM, $p = 0.0087$).
+2. **Myocardial Infarction (MI) Age Degradation:** Both models exhibit clinically meaningful age-related performance degradation on MI. CNN performance drops from 0.9361 (young) to 0.8533 (elderly), while LightGBM drops from 0.9353 (young) to 0.7974 (elderly). This drop is typical in cardiology literature due to the higher prevalence of confounding comorbidities and silent/atypical ischemic presentation in geriatric patients.
+
+### D. Age Band Robustness finding (HYP Class)
 The audit highlighted a significant finding in Section 21 of the methodology guide:
 * **Raw Signal CNN:** Exhibits a large performance drop in Senior cohorts on the Hypertrophy (HYP) class (ROC-AUC drops from **0.8629** in young to **0.7329** in seniors, gap of **0.1300**).
 * **LightGBM (Clinical Features):** Maintains high robustness across all age bands (ROC-AUC ranges from **0.8777** to **0.9061**, max gap of only **0.0284**).

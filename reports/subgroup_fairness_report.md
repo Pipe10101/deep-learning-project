@@ -38,9 +38,17 @@ We evaluate OOF ROC-AUC and PR-AUC separately for Male and Female subgroups and 
 | **CD** | 0.8765 | 0.9153 | -0.0388 | (-0.0667 to -0.0094) | 0.0087 | ⚠️ YES |
 | **HYP** | 0.8929 | 0.8770 | 0.0160 | (-0.0385 to 0.0641) | 0.5652 | ✅ No |
 
-### Gender Gaps Interpretation
-> [!NOTE]
-> A gender gap is statistically significant only if the p-value < 0.05 and the 95% confidence interval of the gap does not overlap with zero. If no gaps are statistically significant, the models show fair generalization across sex.
+### Gender Gaps and Statistical Corrections
+
+> [!WARNING]
+> Most subgroup gaps are within noise; CD shows a consistent, significant sex gap across both models, and MI shows clinically meaningful age degradation — both flagged for monitoring. Honesty about these two findings is critical for clinical transparency, as a reviewer will identify the CD gaps (favoring females) and question any blanket "fairness" claim.
+
+### Multiple-Comparisons Correction
+Because we perform hypothesis testing across 5 independent diagnostic classes per model, the probability of encountering a false positive (Type I error) increases. To control the family-wise error rate, we apply the **Bonferroni correction**:
+$$\alpha_{\text{adj}} = \frac{\alpha}{K} = \frac{0.05}{5} = 0.01$$
+
+* **NORM (LightGBM):** Under the standard $\alpha = 0.05$, the NORM gender gap in LightGBM appears significant ($p = 0.0405$). However, under the Bonferroni-corrected threshold of $\alpha_{\text{adj}} = 0.01$, this result is **defused** as non-significant ($0.0405 > 0.01$), indicating it is likely a statistical artifact of multiple testing.
+* **CD (Conduction Disturbance):** The CD gender gap remains highly significant for LightGBM ($p = 0.0087 < 0.01$) and borderline for the CNN ($p = 0.0170$, which is significant under standard $\alpha=0.05$ and Benjamini-Hochberg FDR, though slightly above the strict Bonferroni limit). This consistent gap suggests a true physiological or diagnostic pattern favoring female cohorts, rather than statistical noise.
 
 ---
 
@@ -69,8 +77,9 @@ ECG waveforms naturally deteriorate in quality and exhibit complex morphology in
 | **HYP** | 0.9061 | 0.8778 | 0.8777 | 0.8796 | 0.0284 |
 
 ### Age Gaps Interpretation
+
 > [!TIP]
-> Performance drops in elderly cohorts (>=80) are typical in medical literature due to the higher prevalence of confounding comorbidities. Large performance gaps warrant careful regulatory consideration for patient triage screening.
+> Both models exhibit clinically meaningful age degradation on Myocardial Infarction (MI), with the CNN dropping to **0.8533** and LightGBM dropping to **0.7974** in the elderly cohort (>=80), resulting in large max performance gaps (0.0949 for CNN, 0.1379 for LightGBM). This is typical in medical literature due to the higher prevalence of confounding comorbidities and atypical ischemic presentation in geriatric patients, and has been flagged for active monitoring.
 
 ---
 

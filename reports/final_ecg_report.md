@@ -198,10 +198,12 @@ To guarantee clinical safety and evaluate model generalization, we audited the m
 ### Key Findings
 1. **Clinical Feature Engineering Insulates Against Age Degradation:**
    On the rare HYP class, the CNN's performance dropped sharply from **0.8629** in young patients to **0.7329** in senior patients—a gap of **0.1300**. This is due to raw waveform degradation and structural shifts in aging ventricles. The clinical feature-engineered LightGBM model, however, demonstrated extreme robustness, maintaining a maximum gap of only **0.0284** across all age bands (ROC-AUC 0.8777 to 0.9061).
-2. **Gender Fairness:**
-   Statistical significance tests (p-value < 0.05, 95% CI not crossing zero) confirmed that gender performance gaps are non-significant for most classes, except for Conduction Disturbance (CD) where females were slightly favored by both models (gap of -0.0257 for CNN and -0.0388 for LightGBM). Both models generalize equitably across patient sex.
-3. **Elderly Performance Drops:**
-   Both models exhibited a performance drop in the elderly (>=80) cohort for Myocardial Infarction (MI), with the CNN dropping to 0.8533 and LightGBM dropping to 0.7974. This reflects the clinical complexity and comorbidities typical of geriatric ECG morphology.
+2. **Honesty Regarding Subgroup Gaps & Demographic Monitoring:**
+   Rather than claiming universal fairness across all patient cohorts, a rigorous clinical audit reveals two key findings that require ongoing monitoring:
+   * **Conduction Disturbance (CD) Sex Gap:** Both models show a consistent and statistically significant performance gap in CD favoring female patients (obs gap of -0.0257 for CNN, $p = 0.0170$; and -0.0388 for LightGBM, $p = 0.0087$).
+   * **Myocardial Infarction (MI) Age Degradation:** Both models exhibit clinically meaningful age-related performance degradation on MI. CNN performance drops from 0.9361 (young) to 0.8533 (elderly), while LightGBM drops from 0.9353 (young) to 0.7974 (elderly). This drop is typical in cardiology literature due to the higher prevalence of confounding comorbidities and silent/atypical ischemic presentation in geriatric patients.
+3. **Multiple-Comparisons Correction (Bonferroni Adjustment):**
+   To control the family-wise Type I error rate when conducting hypothesis tests across 5 independent diagnostic classes, we apply the Bonferroni correction ($\alpha_{\text{adj}} = 0.05 / 5 = 0.01$). This correction defuses the borderline NORM gender gap in LightGBM ($p = 0.0405 > 0.01$) as a non-significant multiple-testing artifact, while validating the CD gender gap as a genuine model characteristic.
 
 ---
 

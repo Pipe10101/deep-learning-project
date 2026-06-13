@@ -29,7 +29,7 @@ except Exception:
     favicon = "🫀"
 
 st.set_page_config(
-    page_title="FVJ Health-Tech | Multi-Heartbreaker CardioAI™",
+    page_title="FVJ Health-Tech | CardioAI™",
     page_icon=favicon,
     layout="wide",
     initial_sidebar_state="expanded"
@@ -379,7 +379,7 @@ st.markdown(f"""
             {logo_html}
             <div>
                 <span style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; color: #00BCD4;">FVJ Health-Tech</span>
-                <h1 style="margin: 0; font-size: 2.2rem; font-weight: 800; color: #ffffff;">Multi-Heartbreaker CardioAI™</h1>
+                <h1 style="margin: 0; font-size: 2.2rem; font-weight: 800; color: #ffffff;">CardioAI™</h1>
                 <p style="margin: 0.5rem 0 0 0; color: #94a3b8; font-size: 1.05rem;">Proactive Diagnostic Intelligence on Raw 12-Lead Physiological Waveforms</p>
             </div>
         </div>
@@ -635,7 +635,7 @@ with tab1:
 
                             if is_abnormal:
                                 verdict_title = "⚠️ FLAG ABNORMAL"
-                                verdict_text = "This record has been flagged by the Multi-Heartbreaker Triage Engine for high-priority clinical review."
+                                verdict_text = "This record has been flagged by the CardioAI Triage Engine for high-priority clinical review."
                                 st.markdown(f"""
                                 <div class="status-card-abnormal">
                                     <div class="status-header-abnormal">{verdict_title}</div>
@@ -785,32 +785,32 @@ with tab1:
                                     additional_flags = f"<br><br><span style='color: #fbbf24;'>Note: Minor sub-threshold or low-confidence indicators for {pathology_str} were detected, but the dominant pattern remains Normal.</span>"
                                 
                                 verdict_title = "✅ PREDOMINANTLY NORMAL CARDIAC STATUS"
-                                verdict_text = f"The Multi-Heartbreaker Diagnostic Engine predicts a normal cardiac pattern with high confidence."
+                                verdict_text = f"The CardioAI Diagnostic Engine predicts a normal cardiac pattern with high confidence."
                                 if additional_flags: verdict_text += f" Note: Minor sub-threshold or low-confidence indicators for {', '.join(active_pathologies)} were detected, but the dominant pattern remains Normal."
                                 
                                 st.markdown(f"""
                                 <div class="status-card-normal">
                                     <div class="status-header-normal">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #a7f3d0;">
-                                        The <b>Multi-Heartbreaker Diagnostic Engine</b> predicts a normal cardiac pattern with high confidence.{additional_flags}
+                                        The <b>CardioAI Diagnostic Engine</b> predicts a normal cardiac pattern with high confidence.{additional_flags}
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
                             elif len(active_pathologies) > 0:
                                 pathology_str = ", ".join([f"<b>{p}</b>" for p in active_pathologies])
                                 verdict_title = "⚠️ ABNORMAL CARDIAC STATUS"
-                                verdict_text = f"The Multi-Heartbreaker Diagnostic Engine has flagged the following active pathology classes: {', '.join(active_pathologies)}. Immediate clinical review is recommended."
+                                verdict_text = f"The CardioAI Diagnostic Engine has flagged the following active pathology classes: {', '.join(active_pathologies)}. Immediate clinical review is recommended."
                                 st.markdown(f"""
                                 <div class="status-card-abnormal">
                                     <div class="status-header-abnormal">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #fecaca;">
-                                        The <b>Multi-Heartbreaker Diagnostic Engine</b> has flagged the following active pathology classes: {pathology_str}. Immediate clinical review is recommended.
+                                        The <b>CardioAI Diagnostic Engine</b> has flagged the following active pathology classes: {pathology_str}. Immediate clinical review is recommended.
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
                             elif prob_norm >= thresh_norm:
                                 verdict_title = "✅ NORMAL CARDIAC STATUS"
-                                verdict_text = "The Multi-Heartbreaker Diagnostic Engine predicts a normal cardiac pattern. No active pathologies were flagged."
+                                verdict_text = "The CardioAI Diagnostic Engine predicts a normal cardiac pattern. No active pathologies were flagged."
                                 st.markdown(f"""
                                 <div class="status-card-normal">
                                     <div class="status-header-normal">{verdict_title}</div>
@@ -1049,7 +1049,7 @@ st.write("---")
 st.markdown("""
 <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 1.5rem 0; line-height: 1.6;">
     <div style="margin-bottom: 0.5rem;">
-        <span style="font-weight: 700; color: #00BCD4;">FVJ Health-Tech</span> | Multi-Heartbreaker CardioAI™ MVP
+        <span style="font-weight: 700; color: #00BCD4;">FVJ Health-Tech</span> | CardioAI™ MVP
     </div>
     <div style="font-size: 0.8rem; color: #475569; margin-bottom: 1rem;">
         Built under rigorous patient-disjoint validation protocols on raw digital telemetry.

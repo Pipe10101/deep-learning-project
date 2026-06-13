@@ -7,7 +7,7 @@ class PDFReport(FPDF):
     def header(self):
         self.set_font('Helvetica', 'B', 15)
         self.set_text_color(0, 188, 212) # Cyan
-        self.cell(0, 10, 'FVJ Health-Tech | Multi-Heartbreaker CardioAI(TM)', 0, 1, 'C')
+        self.cell(0, 10, 'FVJ Health-Tech | CardioAI(TM)', 0, 1, 'C')
         self.set_font('Helvetica', 'I', 10)
         self.set_text_color(150, 150, 150)
         self.cell(0, 10, 'Automated Neural Network Clinical Report', 0, 1, 'C')
@@ -19,6 +19,9 @@ class PDFReport(FPDF):
         self.set_text_color(150, 150, 150)
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
+def safe_text(txt):
+    return str(txt).encode('latin-1', 'replace').decode('latin-1')
+
 def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, classes, verdict_title, verdict_text):
     pdf = PDFReport()
     pdf.add_page()
@@ -26,11 +29,11 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
     # Patient Context
     pdf.set_font('Helvetica', 'B', 12)
     pdf.set_text_color(0, 0, 0)
-    pdf.cell(0, 10, 'Patient Demographic Context', 0, 1)
+    pdf.cell(0, 10, safe_text('Patient Demographic Context'), 0, 1)
     pdf.set_font('Helvetica', '', 10)
-    pdf.cell(0, 6, f"Patient ID: {patient_data['patient_id']} | ECG ID: {patient_data['ecg_id']}", 0, 1)
-    pdf.cell(0, 6, f"Age: {patient_data['age']} | Sex: {'Male' if patient_data['sex']==0 else 'Female'}", 0, 1)
-    pdf.cell(0, 6, f"Report Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", 0, 1)
+    pdf.cell(0, 6, safe_text(f"Patient ID: {patient_data['patient_id']} | ECG ID: {patient_data['ecg_id']}", 0, 1)
+    pdf.cell(0, 6, safe_text(f"Age: {patient_data['age']} | Sex: {'Male' if patient_data['sex']==0 else 'Female'}", 0, 1)
+    pdf.cell(0, 6, safe_text(f"Report Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", 0, 1)
     pdf.ln(5)
 
     # Diagnostic Verdict
@@ -44,10 +47,10 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
     else:
         pdf.set_text_color(245, 158, 11) # Orange
         
-    pdf.cell(0, 8, verdict_title.replace('⚠️', '').replace('✅', '').replace('ℹ️', '').strip(), 0, 1)
+    pdf.cell(0, 8, safe_text(verdict_title.replace('⚠️', '').replace('✅', '').replace('ℹ️', '').strip(), 0, 1)
     pdf.set_font('Helvetica', '', 10)
     pdf.set_text_color(0, 0, 0)
-    pdf.multi_cell(0, 6, verdict_text)
+    pdf.multi_cell(0, 6, safe_text(verdict_text))
     pdf.ln(5)
 
     # Probability Scores
@@ -64,7 +67,7 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
         else:
             pdf.set_text_color(100, 100, 100)
         
-        pdf.cell(0, 6, f"{c}: {prob:.1f}% (Cutoff: {thresh:.1f}%) - {status}", 0, 1)
+        pdf.cell(0, 6, safe_text(f"{c}: {prob:.1f}% (Cutoff: {thresh:.1f}%) - {status}", 0, 1)
         
     pdf.set_text_color(0, 0, 0)
     pdf.ln(5)

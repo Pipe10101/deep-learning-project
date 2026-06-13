@@ -772,31 +772,10 @@ with tab1:
                             prob_norm = predictions[classes.index('NORM')]
                             thresh_norm = thresholds.get('NORM', 0.5)
                             
-                            # Determine if NORM is the dominant prediction
-                            is_norm_dominant = prob_norm >= thresh_norm and all(prob_norm > predictions[classes.index(p)] for p in ['MI', 'STTC', 'CD', 'HYP'])
-
                             st.markdown("### Model Diagnostic Verdict")
 
                             # Display overall cardiac status card
-                            if is_norm_dominant:
-                                additional_flags = ""
-                                if len(active_pathologies) > 0:
-                                    pathology_str = ", ".join([f"<b>{p}</b>" for p in active_pathologies])
-                                    additional_flags = f"<br><br><span style='color: #fbbf24;'>Note: Minor sub-threshold or low-confidence indicators for {pathology_str} were detected, but the dominant pattern remains Normal.</span>"
-                                
-                                verdict_title = "✅ PREDOMINANTLY NORMAL CARDIAC STATUS"
-                                verdict_text = f"The CardioAI Diagnostic Engine predicts a normal cardiac pattern with high confidence."
-                                if additional_flags: verdict_text += f" Note: Minor sub-threshold or low-confidence indicators for {', '.join(active_pathologies)} were detected, but the dominant pattern remains Normal."
-                                
-                                st.markdown(f"""
-                                <div class="status-card-normal">
-                                    <div class="status-header-normal">{verdict_title}</div>
-                                    <p style="margin: 0; font-size: 1.1rem; color: #a7f3d0;">
-                                        The <b>CardioAI Diagnostic Engine</b> predicts a normal cardiac pattern with high confidence.{additional_flags}
-                                    </p>
-                                </div>
-                                """, unsafe_allow_html=True)
-                            elif len(active_pathologies) > 0:
+                            if len(active_pathologies) > 0:
                                 pathology_str = ", ".join([f"<b>{p}</b>" for p in active_pathologies])
                                 verdict_title = "⚠️ ABNORMAL CARDIAC STATUS"
                                 verdict_text = f"The CardioAI Diagnostic Engine has flagged the following active pathology classes: {', '.join(active_pathologies)}. Immediate clinical review is recommended."

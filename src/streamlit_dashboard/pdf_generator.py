@@ -87,4 +87,4 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
     import os
     os.remove(tmp_path)
 
-    return pdf.output(dest='S')
+    return bytes(pdf.output(dest='S'))

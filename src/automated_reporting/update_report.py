@@ -1,7 +1,7 @@
 import re
 
 def update_report():
-    path = '/Users/felipedeleon/.gemini/antigravity-ide/brain/6c49e3f0-dfd4-410a-818f-fdc8211ffc20/final_ecg_report_document.md'
+    path = 'reports/final_ecg_report.md'
     with open(path, 'r', encoding='utf-8') as f:
         content = f.read()
 
@@ -91,7 +91,7 @@ Removing the class weight (previously 1:4 or 1:3) and setting focal α=0.5 on th
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
         
-    print("Successfully updated final_ecg_report_document.md")
+    print("Successfully updated final_ecg_report.md")
 
 if __name__ == '__main__':
     update_report()

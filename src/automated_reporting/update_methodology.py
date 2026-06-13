@@ -1,7 +1,7 @@
 import re
 
 def update_methodology():
-    path = '/Users/felipedeleon/.gemini/antigravity-ide/brain/6c49e3f0-dfd4-410a-818f-fdc8211ffc20/methodology_guide_document.md'
+    path = 'reports/methodology_guide.md'
     with open(path, 'r', encoding='utf-8') as f:
         content = f.read()
 
@@ -24,7 +24,7 @@ def update_methodology():
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
         
-    print("Successfully updated methodology_guide_document.md")
+    print("Successfully updated methodology_guide.md")
 
 if __name__ == '__main__':
     update_methodology()

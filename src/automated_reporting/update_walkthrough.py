@@ -1,7 +1,7 @@
 import re
 
 def update_walkthrough():
-    path = '/Users/felipedeleon/.gemini/antigravity-ide/brain/6c49e3f0-dfd4-410a-818f-fdc8211ffc20/walkthrough.md'
+    path = 'reports/walkthrough.md'
     with open(path, 'r', encoding='utf-8') as f:
         content = f.read()
 

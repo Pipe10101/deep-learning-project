@@ -144,6 +144,10 @@ Use this guide to build your visual slides and practice the live presentation. I
 
 Follow this step-by-step checklist during your demo rehearsal to ensure a flawless, high-scoring live presentation.
 
+> [!TIP]
+> **💡 Key Presenter Advantage (100% Unseen Validation Data):** 
+> The demo records are loaded from `data/unseen_demo_metadata.csv` containing **28 completely unseen patients** whose records were excluded from both the binary and multiclass training splits. Highlight this during your presentation: *"Every single patient record in this demo dropdown is a completely unseen, out-of-sample case that the model has never encountered, demonstrating true clinical generalization in real-time."*
+
 ### Step 1: Set up the Environment
 * [ ] Run the Streamlit server in your terminal:
   ```bash

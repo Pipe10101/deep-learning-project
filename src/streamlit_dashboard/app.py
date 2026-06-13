@@ -85,7 +85,7 @@ def load_multiclass_model():
 
 @st.cache_data
 def load_metadata():
-    metadata_path = 'data/subset_multiclass_metadata.csv'
+    metadata_path = 'data/unseen_demo_metadata.csv'
     if os.path.exists(metadata_path):
         df = pd.read_csv(metadata_path)
         # Filter to records where raw signals exist on disk
@@ -225,7 +225,7 @@ if df_metadata is not None:
     record_filename = record_choices[selected_label]
     selected_row = df_filtered[df_filtered['filename_lr'] == record_filename].iloc[0]
 else:
-    st.sidebar.warning("⚠️ Metadata database not found at `data/subset_multiclass_metadata.csv`!")
+    st.sidebar.warning("⚠️ Metadata database not found at `data/unseen_demo_metadata.csv`!")
     record_filename = None
 
 # 3. Select Lead for Waveform View

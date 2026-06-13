@@ -136,14 +136,14 @@ def main():
     print(f"Loaded {len(X)} records. Shape: {X.shape}")
     print(f"Class distribution: {np.sum(y, axis=0)}")
     
-    kf = KFold(n_splits=2, shuffle=True, random_state=42)
+    kf = KFold(n_splits=5, shuffle=True, random_state=42)
     
     oof_probs = np.zeros_like(y, dtype=float)
     
-    print("\nStarting 2-Fold Cross Validation (Multi-label)...")
+    print("\nStarting 5-Fold Cross Validation (Multi-label)...")
     
     for fold, (train_idx, test_idx) in enumerate(kf.split(X, y)):
-        print(f"\n--- Fold {fold+1}/2 ---")
+        print(f"\n--- Fold {fold+1}/5 ---")
         X_train, X_test = X[train_idx], X[test_idx]
         y_train, y_test = y[train_idx], y[test_idx]
         
@@ -155,10 +155,10 @@ def main():
         
         model.fit(
             train_gen,
-            epochs=1,
+            epochs=40,
             validation_data=val_gen,
             callbacks=[early_stop],
-            verbose=0
+            verbose=1
         )
         
         y_test_probs = model.predict(X_test, verbose=0)
@@ -193,7 +193,7 @@ def main():
     print("\nTraining final multiclass model on full dataset...")
     final_model = build_multiclass_resnet_1d()
     final_train_gen = MultiClassECGDataGenerator(X, y, batch_size=32, shuffle=True, augment=True)
-    final_model.fit(final_train_gen, epochs=1, verbose=0)
+    final_model.fit(final_train_gen, epochs=40, verbose=1)
     final_model.save('models/multiclass_1d_ecg_model.h5')
     print("Final Multiclass model saved to models/multiclass_1d_ecg_model.h5")
 

@@ -227,7 +227,7 @@ The **FVJ CardioAI™ MVP** is a clinical decision-support application built usi
 
 ![FVJ Health-Tech MVP Dashboard UI](src/streamlit_dashboard/assets/inference_completed.png)
 
-*A video demonstrating the live leakage check execution is available at `src/streamlit_dashboard/assets/fvj_validation_audit_tab.webp`.*
+*A full interactive walkthrough demonstrating binary triage, multi-label diagnostic inference, patient navigation, and leakage audits is available at `src/streamlit_dashboard/assets/cardioai_demo.webp`.*
 
 ---
 

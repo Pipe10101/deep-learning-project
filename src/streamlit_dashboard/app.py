@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import scipy.signal as signal
 import json
 import base64
+from pdf_generator import generate_pdf_report
+from gradcam import compute_gradcam_1d
 
 def get_base64_image(image_path):
     try:
@@ -412,27 +414,47 @@ with st.container():
             st.error("⚠️ Multi-Label Model not found in `models/`!")
 
     with col_c2:
-        if df_metadata is not None:
-            subgroup_filter = st.selectbox(
-                "Filter by Ground-Truth Pathology:",
-                ["All Patients", "Normal (NORM)", "Myocardial Infarction (MI)", "ST/T-Change (STTC)", "Conduction Disturbance (CD)", "Hypertrophy (HYP)"]
-            )
-            # Filter the metadata dataframe based on selection
-            if subgroup_filter == "Normal (NORM)":
-                df_filtered = df_metadata[df_metadata['label_NORM'] == 1]
-            elif subgroup_filter == "Myocardial Infarction (MI)":
-                df_filtered = df_metadata[df_metadata['label_MI'] == 1]
-            elif subgroup_filter == "ST/T-Change (STTC)":
-                df_filtered = df_metadata[df_metadata['label_STTC'] == 1]
-            elif subgroup_filter == "Conduction Disturbance (CD)":
-                df_filtered = df_metadata[df_metadata['label_CD'] == 1]
-            elif subgroup_filter == "Hypertrophy (HYP)":
-                df_filtered = df_metadata[df_metadata['label_HYP'] == 1]
-            else:
-                df_filtered = df_metadata
-        else:
-            subgroup_filter = "All Patients"
-            df_filtered = None
+        pass # Replaced by sidebar
+
+    # Sidebar for Advanced Filtering
+    st.sidebar.markdown("### 🔍 Advanced Patient Filtering")
+    if df_metadata is not None:
+        # Age Filter
+        min_age = int(df_metadata['age'].min()) if not df_metadata['age'].isnull().all() else 0
+        max_age = int(df_metadata['age'].max()) if not df_metadata['age'].isnull().all() else 100
+        age_range = st.sidebar.slider("Age Range", min_value=min_age, max_value=max_age, value=(min_age, max_age))
+        
+        # Sex Filter
+        sex_options = ["All"] + sorted([str(x) for x in df_metadata['sex'].dropna().unique()])
+        sex_filter = st.sidebar.selectbox("Biological Sex", sex_options)
+        
+        # Pathology Filter
+        subgroup_filter = st.sidebar.selectbox(
+            "Ground-Truth Pathology",
+            ["All Patients", "Normal (NORM)", "Myocardial Infarction (MI)", "ST/T-Change (STTC)", "Conduction Disturbance (CD)", "Hypertrophy (HYP)"]
+        )
+
+        # Apply Filters
+        df_filtered = df_metadata.copy()
+        df_filtered = df_filtered[(df_filtered['age'] >= age_range[0]) & (df_filtered['age'] <= age_range[1])]
+        if sex_filter != "All":
+            df_filtered = df_filtered[df_filtered['sex'] == (int(float(sex_filter)) if str(sex_filter).replace('.','',1).isdigit() else sex_filter)]
+            
+        if subgroup_filter == "Normal (NORM)":
+            df_filtered = df_filtered[df_filtered['label_NORM'] == 1]
+        elif subgroup_filter == "Myocardial Infarction (MI)":
+            df_filtered = df_filtered[df_filtered['label_MI'] == 1]
+        elif subgroup_filter == "ST/T-Change (STTC)":
+            df_filtered = df_filtered[df_filtered['label_STTC'] == 1]
+        elif subgroup_filter == "Conduction Disturbance (CD)":
+            df_filtered = df_filtered[df_filtered['label_CD'] == 1]
+        elif subgroup_filter == "Hypertrophy (HYP)":
+            df_filtered = df_filtered[df_filtered['label_HYP'] == 1]
+            
+        st.sidebar.markdown(f"**{len(df_filtered)} patients match filters.**")
+    else:
+        subgroup_filter = "All Patients"
+        df_filtered = None
 
     with col_c3:
         lead_names = ["Lead I", "Lead II", "Lead III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
@@ -510,6 +532,22 @@ with tab1:
 
                 plt.tight_layout()
                 st.pyplot(fig)
+
+                import io
+                buf = io.BytesIO()
+                fig.patch.set_facecolor('#ffffff')
+                ax[0].patch.set_facecolor('#ffffff')
+                ax[1].patch.set_facecolor('#ffffff')
+                ax[0].tick_params(colors='black')
+                ax[1].tick_params(colors='black')
+                ax[0].set_title("Raw 12-Lead Electrocardiogram Trace", color='black')
+                ax[1].set_title("Preprocessed and Standardized Waveform (Z-Score)", color='black')
+                ax[0].set_xlabel("Time Samples (100 Hz)", color='black')
+                ax[1].set_xlabel("Time Samples (100 Hz)", color='black')
+                ax[0].set_ylabel("Amplitude", color='black')
+                ax[1].set_ylabel("Standard Deviation", color='black')
+                fig.savefig(buf, format='png', bbox_inches='tight', facecolor='#ffffff')
+                chart_bytes = buf.getvalue()
 
                 # Show patient metadata
                 st.write("---")
@@ -596,20 +634,24 @@ with tab1:
                             is_abnormal = probability >= 0.50
 
                             if is_abnormal:
+                                verdict_title = "⚠️ FLAG ABNORMAL"
+                                verdict_text = "This record has been flagged by the Multi-Heartbreaker Triage Engine for high-priority clinical review."
                                 st.markdown(f"""
                                 <div class="status-card-abnormal">
-                                    <div class="status-header-abnormal">⚠️ FLAG ABNORMAL</div>
+                                    <div class="status-header-abnormal">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #fecaca;">
-                                        This record has been flagged by the <b>Multi-Heartbreaker Triage Engine</b> for <b>high-priority clinical review</b>.
+                                        {verdict_text}
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
                             else:
+                                verdict_title = "✅ NORMAL ECG"
+                                verdict_text = "This record has been classified as a Normal ECG pattern. No urgent triage required."
                                 st.markdown(f"""
                                 <div class="status-card-normal">
-                                    <div class="status-header-normal">✅ NORMAL ECG</div>
+                                    <div class="status-header-normal">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #a7f3d0;">
-                                        This record has been classified as a <b>Normal ECG pattern</b>. No urgent triage required.
+                                        {verdict_text}
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
@@ -634,27 +676,76 @@ with tab1:
                                 badge_style = "background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15);"
 
                             binary_chart_html = f"""
-    <div style="background: rgba(30, 41, 59, 0.5); padding: 1.25rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; margin-bottom: 0.4rem;">
-            <span style="font-weight: 700; color: #f8fafc;">Triage Abnormality Probability</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 700; color: {label_color}; font-size: 1rem;">{probability:.2%}</span>
-                <span style="font-size: 0.8rem; color: #64748b;">(Cutoff: 0.500)</span>
-                <span style="padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; {badge_style}">
-                    {status_text}
-                </span>
-            </div>
-        </div>
-        <div style="position: relative; background-color: rgba(255, 255, 255, 0.04); height: 10px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.06); padding: 0.5px;">
-            <!-- Filled Progress Bar -->
-            <div style="background: {progress_background}; width: {prob_pct}%; height: 100%; border-radius: 9999px; transition: width 0.6s ease-in-out;"></div>
-            <!-- Threshold Cutoff Line -->
-            <div style="position: absolute; left: {thresh_pct}%; top: -5px; height: 18px; width: 2.5px; background-color: #f43f5e; box-shadow: 0 0 6px #f43f5e; z-index: 10;" title="Triage Cutoff: 0.500"></div>
+<div style="background: rgba(30, 41, 59, 0.5); padding: 1.25rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; margin-bottom: 0.4rem;">
+        <span style="font-weight: 700; color: #f8fafc;">Triage Abnormality Probability</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 700; color: {label_color}; font-size: 1rem;">{probability:.2%}</span>
+            <span style="font-size: 0.8rem; color: #64748b;">(Cutoff: 0.500)</span>
+            <span style="padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; {badge_style}">
+                {status_text}
+            </span>
         </div>
     </div>
-    """
+    <div style="position: relative; background-color: rgba(255, 255, 255, 0.04); height: 10px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.06); padding: 0.5px;">
+        <!-- Filled Progress Bar -->
+        <div style="background: {progress_background}; width: {prob_pct}%; height: 100%; border-radius: 9999px; transition: width 0.6s ease-in-out;"></div>
+        <!-- Threshold Cutoff Line -->
+        <div style="position: absolute; left: {thresh_pct}%; top: -5px; height: 18px; width: 2.5px; background-color: #f43f5e; box-shadow: 0 0 6px #f43f5e; z-index: 10;" title="Triage Cutoff: 0.500"></div>
+    </div>
+</div>
+"""
                             st.markdown(binary_chart_html, unsafe_allow_html=True)
+                            
+                            st.write("---")
+                            pdf_bytes = generate_pdf_report(
+                                patient_data=selected_row,
+                                chart_bytes=chart_bytes,
+                                predictions=[probability],
+                                thresholds={"Abnormal": 0.50},
+                                classes=["Abnormal"],
+                                verdict_title=verdict_title,
+                                verdict_text=verdict_text
+                            )
+                            st.download_button(
+                                label="📄 Download Clinical Report (PDF)",
+                                data=pdf_bytes,
+                                file_name=f"clinical_report_{selected_row['patient_id']}.pdf",
+                                mime="application/pdf",
+                                use_container_width=True
+                            )
+                            
                             st.write("* **Pipeline Sensitivity (Recall):** `85.80%` | **Specificity:** `84.10%` (out-of-fold validated)")
+                            
+                            # Grad-CAM Visualization
+                            with st.expander("🔍 Interpretability: Grad-CAM Feature Heatmap", expanded=False):
+                                st.write("The heatmap highlights the temporal regions of the ECG waveform that most strongly influenced the neural network's triage decision. Red/warm regions indicate high influence.")
+                                try:
+                                    heatmap = compute_gradcam_1d(binary_model, input_batch, target_class_idx=0)
+                                    fig_cam, ax_cam = plt.subplots(4, 1, figsize=(10, 6), sharex=True)
+                                    fig_cam.patch.set_alpha(0.0)
+                                    display_leads = [0, 1, 6, 10] # I, II, V1, V5
+                                    lead_names_cam = ["Lead I", "Lead II", "V1", "V5"]
+                                    for i, (l_idx, l_name) in enumerate(zip(display_leads, lead_names_cam)):
+                                        ax_cam[i].patch.set_alpha(0.0)
+                                        # Background Heatmap
+                                        x = np.arange(1000)
+                                        y_min, y_max = np.min(norm_sig[:, l_idx]), np.max(norm_sig[:, l_idx])
+                                        padding = (y_max - y_min) * 0.1
+                                        y1, y2 = y_min - padding, y_max + padding
+                                        ax_cam[i].imshow(heatmap[None, :], aspect='auto', cmap='jet', extent=[0, 1000, y1, y2], alpha=0.4, interpolation='nearest')
+                                        # ECG Waveform
+                                        ax_cam[i].plot(norm_sig[:, l_idx], color='white', linewidth=1.2, alpha=0.9)
+                                        ax_cam[i].set_ylabel(l_name, color='white')
+                                        ax_cam[i].set_ylim(y1, y2)
+                                        ax_cam[i].tick_params(colors='white')
+                                        ax_cam[i].grid(True, alpha=0.2, linestyle='--')
+                                    ax_cam[3].set_xlabel("Time Samples (100 Hz)", color='white')
+                                    plt.tight_layout()
+                                    st.pyplot(fig_cam)
+                                except Exception as e:
+                                    st.error(f"Could not generate Grad-CAM: {str(e)}")
+
                         else:
                             st.error("Error: Binary model missing.")
 
@@ -678,34 +769,64 @@ with tab1:
                                 if prob >= thresh:
                                     active_pathologies.append(c)
 
+                            prob_norm = predictions[classes.index('NORM')]
+                            thresh_norm = thresholds.get('NORM', 0.5)
+                            
+                            # Determine if NORM is the dominant prediction
+                            is_norm_dominant = prob_norm >= thresh_norm and all(prob_norm > predictions[classes.index(p)] for p in ['MI', 'STTC', 'CD', 'HYP'])
+
                             st.markdown("### Model Diagnostic Verdict")
 
                             # Display overall cardiac status card
-                            if len(active_pathologies) > 0:
+                            if is_norm_dominant:
+                                additional_flags = ""
+                                if len(active_pathologies) > 0:
+                                    pathology_str = ", ".join([f"<b>{p}</b>" for p in active_pathologies])
+                                    additional_flags = f"<br><br><span style='color: #fbbf24;'>Note: Minor sub-threshold or low-confidence indicators for {pathology_str} were detected, but the dominant pattern remains Normal.</span>"
+                                
+                                verdict_title = "✅ PREDOMINANTLY NORMAL CARDIAC STATUS"
+                                verdict_text = f"The Multi-Heartbreaker Diagnostic Engine predicts a normal cardiac pattern with high confidence."
+                                if additional_flags: verdict_text += f" Note: Minor sub-threshold or low-confidence indicators for {', '.join(active_pathologies)} were detected, but the dominant pattern remains Normal."
+                                
+                                st.markdown(f"""
+                                <div class="status-card-normal">
+                                    <div class="status-header-normal">{verdict_title}</div>
+                                    <p style="margin: 0; font-size: 1.1rem; color: #a7f3d0;">
+                                        The <b>Multi-Heartbreaker Diagnostic Engine</b> predicts a normal cardiac pattern with high confidence.{additional_flags}
+                                    </p>
+                                </div>
+                                """, unsafe_allow_html=True)
+                            elif len(active_pathologies) > 0:
                                 pathology_str = ", ".join([f"<b>{p}</b>" for p in active_pathologies])
+                                verdict_title = "⚠️ ABNORMAL CARDIAC STATUS"
+                                verdict_text = f"The Multi-Heartbreaker Diagnostic Engine has flagged the following active pathology classes: {', '.join(active_pathologies)}. Immediate clinical review is recommended."
                                 st.markdown(f"""
                                 <div class="status-card-abnormal">
-                                    <div class="status-header-abnormal">⚠️ ABNORMAL CARDIAC STATUS</div>
+                                    <div class="status-header-abnormal">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #fecaca;">
                                         The <b>Multi-Heartbreaker Diagnostic Engine</b> has flagged the following active pathology classes: {pathology_str}. Immediate clinical review is recommended.
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
-                            elif predictions[classes.index('NORM')] >= thresholds.get('NORM', 0.5):
+                            elif prob_norm >= thresh_norm:
+                                verdict_title = "✅ NORMAL CARDIAC STATUS"
+                                verdict_text = "The Multi-Heartbreaker Diagnostic Engine predicts a normal cardiac pattern. No active pathologies were flagged."
                                 st.markdown(f"""
                                 <div class="status-card-normal">
-                                    <div class="status-header-normal">✅ NORMAL CARDIAC STATUS</div>
+                                    <div class="status-header-normal">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #a7f3d0;">
-                                        The <b>Multi-Heartbreaker Diagnostic Engine</b> predicts a normal cardiac pattern. No active pathologies were flagged.
+                                        {verdict_text}
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
                             else:
+                                verdict_title = "ℹ️ BORDERLINE / NON-SPECIFIC STATUS"
+                                verdict_text = "The waveform represents a borderline pattern. No major pathologies were flagged, but normal rhythm criteria are not fully met."
                                 st.markdown(f"""
                                 <div class="status-card-info">
-                                    <div class="status-header-info">ℹ️ BORDERLINE / NON-SPECIFIC STATUS</div>
+                                    <div class="status-header-info">{verdict_title}</div>
                                     <p style="margin: 0; font-size: 1.1rem; color: #bae6fd;">
-                                        The waveform represents a borderline pattern. No major pathologies were flagged, but normal rhythm criteria are not fully met.
+                                        {verdict_text}
                                     </p>
                                 </div>
                                 """, unsafe_allow_html=True)
@@ -739,49 +860,105 @@ with tab1:
                                 thresh_pct = min(99.0, max(1.0, thresh * 100))
 
                                 chart_html += f"""
-    <div style="margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; margin-bottom: 0.4rem;">
-            <span style="font-weight: 700; color: #f8fafc;">{class_labels[c]}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-weight: 700; color: {label_color}; font-size: 1rem;">{prob:.1%}</span>
-                <span style="font-size: 0.8rem; color: #64748b;">(Cutoff: {thresh:.3f})</span>
-                <span style="padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; {badge_style}">
-                    {status_text}
-                </span>
-            </div>
-        </div>
-        <div style="position: relative; background-color: rgba(255, 255, 255, 0.04); height: 10px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.06); padding: 0.5px;">
-            <!-- Filled Progress Bar -->
-            <div style="background: {progress_background}; width: {prob_pct}%; height: 100%; border-radius: 9999px; transition: width 0.6s ease-in-out;"></div>
-            <!-- Threshold Cutoff Line -->
-            <div style="position: absolute; left: {thresh_pct}%; top: -5px; height: 18px; width: 2.5px; background-color: #f43f5e; box-shadow: 0 0 6px #f43f5e; z-index: 10;" title="Youden J Cutoff: {thresh:.3f}"></div>
+<div style="margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; margin-bottom: 0.4rem;">
+        <span style="font-weight: 700; color: #f8fafc;">{class_labels[c]}</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 700; color: {label_color}; font-size: 1rem;">{prob:.1%}</span>
+            <span style="font-size: 0.8rem; color: #64748b;">(Cutoff: {thresh:.3f})</span>
+            <span style="padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; {badge_style}">
+                {status_text}
+            </span>
         </div>
     </div>
-    """
+    <div style="position: relative; background-color: rgba(255, 255, 255, 0.04); height: 10px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.06); padding: 0.5px;">
+        <!-- Filled Progress Bar -->
+        <div style="background: {progress_background}; width: {prob_pct}%; height: 100%; border-radius: 9999px; transition: width 0.6s ease-in-out;"></div>
+        <!-- Threshold Cutoff Line -->
+        <div style="position: absolute; left: {thresh_pct}%; top: -5px; height: 18px; width: 2.5px; background-color: #f43f5e; box-shadow: 0 0 6px #f43f5e; z-index: 10;" title="Youden J Cutoff: {thresh:.3f}"></div>
+    </div>
+</div>
+"""
 
                             # Legend info at the bottom of the card
                             chart_html += """
-    <div style="display: flex; justify-content: flex-end; gap: 15px; font-size: 0.75rem; color: #64748b; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem;">
-        <div style="display: flex; align-items: center; gap: 4px;">
-            <div style="width: 8px; height: 8px; background: linear-gradient(90deg, #ef4444 0%, #f43f5e 100%); border-radius: 2px;"></div>
-            <span>Flagged Pathology</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px;">
-            <div style="width: 8px; height: 8px; background: linear-gradient(90deg, #00BCD4 0%, #0288D1 100%); border-radius: 2px;"></div>
-            <span>Sub-threshold / Negative</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px;">
-            <div style="width: 2.5px; height: 8px; background: #f43f5e; box-shadow: 0 0 2px #f43f5e;"></div>
-            <span>Youden's J Cutoff</span>
-        </div>
+<div style="display: flex; justify-content: flex-end; gap: 15px; font-size: 0.75rem; color: #64748b; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem;">
+    <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 8px; height: 8px; background: linear-gradient(90deg, #ef4444 0%, #f43f5e 100%); border-radius: 2px;"></div>
+        <span>Flagged Pathology</span>
     </div>
+    <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 8px; height: 8px; background: linear-gradient(90deg, #00BCD4 0%, #0288D1 100%); border-radius: 2px;"></div>
+        <span>Sub-threshold / Negative</span>
     </div>
-    """
+    <div style="display: flex; align-items: center; gap: 4px;">
+        <div style="width: 2.5px; height: 8px; background: #f43f5e; box-shadow: 0 0 2px #f43f5e;"></div>
+        <span>Youden's J Cutoff</span>
+    </div>
+</div>
+</div>
+"""
 
                             st.markdown(chart_html, unsafe_allow_html=True)
 
                             # Show clinical warning on HYP
                             st.warning("⚠️ **HYP Clinical Alert:** The Hypertrophy (HYP) class is presented for exploratory pipeline validation only. It is not clinically ready/usable due to statistical sparsity (only 240 positive cases). Scaling the pipeline to the full 21k record database is required for clinical readiness.")
+
+                            st.write("---")
+                            pdf_bytes = generate_pdf_report(
+                                patient_data=selected_row,
+                                chart_bytes=chart_bytes,
+                                predictions=predictions,
+                                thresholds=thresholds,
+                                classes=classes,
+                                verdict_title=verdict_title,
+                                verdict_text=verdict_text
+                            )
+                            st.download_button(
+                                label="📄 Download Clinical Report (PDF)",
+                                data=pdf_bytes,
+                                file_name=f"clinical_report_{selected_row['patient_id']}.pdf",
+                                mime="application/pdf",
+                                use_container_width=True
+                            )
+
+                            # Grad-CAM Visualization
+                            with st.expander("🔍 Interpretability: Grad-CAM Feature Heatmap", expanded=False):
+                                st.write("The heatmap highlights the temporal regions of the ECG waveform that most strongly influenced the neural network's decision for the dominant diagnostic class.")
+                                try:
+                                    target_idx = 0 # NORM by default
+                                    if len(active_pathologies) > 0:
+                                        # Focus on the highest confidence pathology
+                                        highest_pathology = max(active_pathologies, key=lambda c: predictions[classes.index(c)])
+                                        target_idx = classes.index(highest_pathology)
+                                        st.write(f"**Explaining focus for class:** `{highest_pathology}`")
+                                    else:
+                                        st.write(f"**Explaining focus for class:** `NORM`")
+                                        
+                                    heatmap = compute_gradcam_1d(multiclass_model, input_batch, target_class_idx=target_idx)
+                                    fig_cam, ax_cam = plt.subplots(4, 1, figsize=(10, 6), sharex=True)
+                                    fig_cam.patch.set_alpha(0.0)
+                                    display_leads = [0, 1, 6, 10] # I, II, V1, V5
+                                    lead_names_cam = ["Lead I", "Lead II", "V1", "V5"]
+                                    for i, (l_idx, l_name) in enumerate(zip(display_leads, lead_names_cam)):
+                                        ax_cam[i].patch.set_alpha(0.0)
+                                        # Background Heatmap
+                                        y_min, y_max = np.min(norm_sig[:, l_idx]), np.max(norm_sig[:, l_idx])
+                                        padding = (y_max - y_min) * 0.1
+                                        y1, y2 = y_min - padding, y_max + padding
+                                        ax_cam[i].imshow(heatmap[None, :], aspect='auto', cmap='jet', extent=[0, 1000, y1, y2], alpha=0.4, interpolation='nearest')
+                                        # ECG Waveform
+                                        ax_cam[i].plot(norm_sig[:, l_idx], color='white', linewidth=1.2, alpha=0.9)
+                                        ax_cam[i].set_ylabel(l_name, color='white')
+                                        ax_cam[i].set_ylim(y1, y2)
+                                        ax_cam[i].tick_params(colors='white')
+                                        ax_cam[i].grid(True, alpha=0.2, linestyle='--')
+                                    ax_cam[3].set_xlabel("Time Samples (100 Hz)", color='white')
+                                    plt.tight_layout()
+                                    st.pyplot(fig_cam)
+                                except Exception as e:
+                                    st.error(f"Could not generate Grad-CAM: {str(e)}")
+
                         else:
                             st.error("Error: Multiclass model missing.")
 

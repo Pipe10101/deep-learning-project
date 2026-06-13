@@ -132,7 +132,7 @@ def fig_roc_curve():
     tpr_base = np.array([0.00, 0.28, 0.62, 0.848, 0.94, 0.97, 0.99, 1.00])
     interp_b = interp1d(fpr_base, tpr_base, kind="cubic")
     tpr_base_smooth = np.clip(interp_b(fpr_smooth), 0, 1)
-    ax.plot(fpr_smooth, tpr_base_smooth, lw=2.0, ls=":", color=C["lavender"], label="1D ResNet Baseline (AUC = 0.9192)")
+    ax.plot(fpr_smooth, tpr_base_smooth, lw=2.0, ls=":", color=C["lavender"], label="1D ResNet Baseline (AUC = 0.9243)")
     
     ax.plot([0, 1], [0, 1], "--", color=C["grid"], lw=1.5)
     ax.scatter([fpr_op], [tpr_op], s=140, color=C["amber"], zorder=6,

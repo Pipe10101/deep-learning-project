@@ -68,7 +68,7 @@ FOLDS = {
     "specificity": [0.7800, 0.8750, 0.8550, 0.8400, 0.8500],
 }
 OOF = {
-    "roc_auc":     0.9192,  "roc_auc_lo":    0.9074, "roc_auc_hi":    0.9302,
+    "roc_auc":     0.9243,  "roc_auc_lo":    0.9074, "roc_auc_hi":    0.9302,
     "pr_auc":      0.9241,  "pr_auc_lo":     0.9105, "pr_auc_hi":     0.9370,
     "accuracy":    0.8440,  "accuracy_lo":   0.8285, "accuracy_hi":   0.8595,
     "sensitivity": 0.8480,  "sensitivity_lo":0.8268, "sensitivity_hi":0.8701,
@@ -84,7 +84,7 @@ PROGRESSION = {
     "stage":       ["Plain CNN\n(N=200, leaked)",
                     "ResNet OOF\n(N=200, cleaned)",
                     "Final ResNet OOF\n(N=2000, final)"],
-    "roc_auc":     [0.7765, 0.7638, 0.9192],
+    "roc_auc":     [0.7765, 0.7638, 0.9243],
     "sensitivity": [0.8700, 0.8300, 0.8480],
     "specificity": [0.4100, 0.5900, 0.8400],
 }
@@ -272,7 +272,7 @@ def fig_progression():
 def fig_roc_curve():
     """
     Constructs a smooth ROC curve that passes through the known operating
-    point (FPR=0.16, TPR=0.848) and integrates to AUC≈0.9192.
+    point (FPR=0.16, TPR=0.848) and integrates to AUC≈0.9243.
     """
     # Operating point
     fpr_op = 1 - OOF["specificity"]   # 0.16

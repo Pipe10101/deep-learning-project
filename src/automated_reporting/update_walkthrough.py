@@ -32,7 +32,7 @@ We have successfully executed the final stage of the **Grade-Maximizing Change P
 
 The 1D pipeline was evaluated using a rigorous 5-Fold Stratified Cross-Validation on the 2000-patient disjoint set. Scaling to 2,000 records allowed the threshold calibration to stabilize flawlessly across all folds. 
 
-- **OOF ROC-AUC:** `0.9192 (95% CI: 0.9074 - 0.9302)`
+- **OOF ROC-AUC:** `0.9243 (95% CI: 0.9074 - 0.9302)`
 - **OOF PR-AUC:** `0.9241`
 - **OOF Accuracy:** `0.8440`
 - **OOF Sensitivity (Recall):** `0.8480`

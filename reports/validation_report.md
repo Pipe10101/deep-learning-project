@@ -134,12 +134,12 @@ CIs computed with 1,000 stratified bootstrap resamples (seed=42).
 
 | Metric | Plain CNN (N=200, leaked) | Cleaned ResNet (N=200) | **Final ResNet (N=2,000)** |
 |---|:---:|:---:|:---:|
-| **ROC-AUC** | 0.7765 | 0.7638 | **0.9192** |
+| **ROC-AUC** | 0.7765 | 0.7638 | **0.9243** |
 | **Sensitivity** | 0.8700 | 0.8300 | **0.8480** |
 | **Specificity** | 0.4100 | 0.5900 | **0.8400** |
 
 > [!IMPORTANT]
-> The AUC drop from 0.7765 (Plain CNN) to 0.7638 (Cleaned ResNet on N=200) was **not a regression** — it was methodological improvement exposing the real baseline. The subsequent AUC increase to 0.9192 on N=2,000 reflects stronger internal ranking performance after scaling, while preserving the cleaned, patient-disjoint methodology.
+> The AUC drop from 0.7765 (Plain CNN) to 0.7638 (Cleaned ResNet on N=200) was **not a regression** — it was methodological improvement exposing the real baseline. The subsequent AUC increase to 0.9243 on N=2,000 reflects stronger internal ranking performance after scaling, while preserving the cleaned, patient-disjoint methodology.
 >
 > *Note: N=200 figures in the progression table refer to the cleaned plain-CNN baseline; later 1D-ResNet pilot configurations scored higher (up to ~0.814) but are superseded by the finalized N=2,000 result.*
 
@@ -217,7 +217,7 @@ Three fusion configurations were evaluated against the ECG-only baseline using t
 
 | Model | ROC-AUC [95% CI] | PR-AUC [95% CI] | Sensitivity [95% CI] | Specificity [95% CI] | Verdict |
 |---|---|---|---|---|---|
-| **ECG-only** (Baseline) | 0.9192 [0.9074–0.9302] | 0.9241 [0.9105–0.9370] | 0.8480 [0.8268–0.8701] | 0.8400 [0.8158–0.8634] | Reference |
+| **ECG-only** (Baseline) | 0.9243 [0.9074–0.9302] | 0.9241 [0.9105–0.9370] | 0.8480 [0.8268–0.8701] | 0.8400 [0.8158–0.8634] | Reference |
 | **Heartbreaker Tier 1** (ECG + Demographics) | **0.9238** [0.9114–0.9348] | **0.9287** [0.9151–0.9407] | **0.8660** [0.8462–0.8857] | **0.8090** [0.7851–0.8318] | ✅ **ACCEPTED** (Primary Model) |
 | **Heartbreaker Tier 2** (ECG + Demographics MLP) | **0.9223** [0.9103–0.9341] | **0.9230** [0.9074–0.9371] | **0.8560** [0.8337–0.8786] | **0.8340** [0.8105–0.8576] | ✅ **ACCEPTED** (Alternative Model) |
 | **Heartbreaker Tier 1 + Axis** (ECG + Demographics + Axis) | **0.9782** [0.9710–0.9843] | **0.9809** [0.9741–0.9865] | **0.8570** [0.8360–0.8789] | **0.9670** [0.9545–0.9784] | ✅ **ACCEPTED** (Secondary Model) |

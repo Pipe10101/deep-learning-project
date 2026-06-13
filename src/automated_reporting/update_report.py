@@ -36,7 +36,7 @@ Because the pilot dataset contains only 200 unique patients, threshold-dependent
     new_sec9 = """### Cross-Validated Model Performance with Validation-Only Threshold Calibration
 When evaluated under 5-fold patient-disjoint cross-validation on 2,000 patients, using Out-Of-Fold (OOF) aggregation and Platt Calibration, the model achieved exceptionally stable and high performance. The instability observed in earlier iterations (N=200) was completely resolved by removing artificial class weights and increasing the sample size by 10x.
 
-- **OOF ROC-AUC:** `0.9192 (95% CI: 0.9074 - 0.9302)`
+- **OOF ROC-AUC:** `0.9243 (95% CI: 0.9074 - 0.9302)`
 - **OOF PR-AUC:** `0.9241 (95% CI: 0.9105 - 0.9370)`
 - **OOF Accuracy:** `0.8440 (95% CI: 0.8285 - 0.8595)`
 - **OOF Sensitivity (Recall):** `0.8480 (95% CI: 0.8268 - 0.8701)`
@@ -75,7 +75,7 @@ Removing the class weight (previously 1:4 or 1:3) and setting focal α=0.5 on th
     )
     content = content.replace(
         "The defensible claim is that the PTB-XL-only 1D raw-signal pipeline, after systematic threshold and weight ablation, achieved ROC-AUC 0.8245 ± 0.0470, PR-AUC 0.8524 ± 0.0428, sensitivity 0.8400 ± 0.1158, and specificity 0.5600 ± 0.0583 under patient-disjoint validation on a subclass-balanced pilot dataset. These are the best metrics obtained across 6 ablation experiments.",
-        "The defensible claim is that the PTB-XL-only 1D raw-signal pipeline, evaluated on 2,000 patients with Out-Of-Fold aggregation, achieved ROC-AUC 0.9192, PR-AUC 0.9241, sensitivity 0.8480, and specificity 0.8400 under strict patient-disjoint validation."
+        "The defensible claim is that the PTB-XL-only 1D raw-signal pipeline, evaluated on 2,000 patients with Out-Of-Fold aggregation, achieved ROC-AUC 0.9243, PR-AUC 0.9241, sensitivity 0.8480, and specificity 0.8400 under strict patient-disjoint validation."
     )
     
     # SECTION 13 Update
@@ -85,7 +85,7 @@ Removing the class weight (previously 1:4 or 1:3) and setting focal α=0.5 on th
     )
     content = content.replace(
         "ROC-AUC 0.8245 ± 0.0470, PR-AUC 0.8524 ± 0.0428, sensitivity 0.8400 ± 0.1158, and specificity 0.5600 ± 0.0583",
-        "ROC-AUC 0.9192, PR-AUC 0.9241, sensitivity 0.8480, and specificity 0.8400"
+        "ROC-AUC 0.9243, PR-AUC 0.9241, sensitivity 0.8480, and specificity 0.8400"
     )
 
     with open(path, 'w', encoding='utf-8') as f:

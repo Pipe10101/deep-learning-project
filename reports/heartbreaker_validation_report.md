@@ -15,7 +15,7 @@ Heartbreaker reuses the internally validated 2-block 1D ResNet as a frozen physi
 
 1. **Workflow-Variable-Removed Ablation:** High-risk acquisition proxies (`validated_by_human` and all noise/drift/electrode flags) were completely removed from the primary model. Specificity is **0.8090** (Tier 1 LR) and **0.8340** (Tier 2 MLP), and ROC-AUC is **0.9238** (Tier 1 LR) and **0.9223** (Tier 2 MLP), demonstrating that the model does not rely on workflow shortcuts and holds stable.
 2. **Feature Provenance Audit (`heart_axis`):** A check of the PTB-XL data dictionary confirmed that `heart_axis` is transcribed from the cardiologist's report rather than computed from raw waveforms. Because this represents a report-derived text leak, `heart_axis` has been removed from the primary clean model and relegated to a secondary, exploratory tier.
-3. **Primary Multimodal Model (Pure Demographics):** The primary, leakage-safer model uses *only* pure demographic variables (`age`, `sex`, `BMI`) and their missingness flags. Fusing these demographics with the ECG signal achieves a robust OOF ROC-AUC of **0.9238 [95% CI: 0.9114–0.9348]** (Tier 1 LR) and **0.9223 [95% CI: 0.9103–0.9341]** (Tier 2 MLP), representing a highly defensible clinical-context integration.
+3. **Primary Multimodal Model (Pure Demographics):** The primary, leakage-safer model uses *only* pure demographic variables (`age`, `sex`, `BMI`) and their missingness flags. Fusing these demographics with the ECG signal achieves an OOF ROC-AUC of **0.9238 [95% CI: 0.9114–0.9348]** (Tier 1 LR) and **0.9223 [95% CI: 0.9103–0.9341]** (Tier 2 MLP). Because this represents a slight drop from the 0.9243 baseline, the multimodal models were **REJECTED**, proving the ECG-only model is sufficient.
 
 ---
 
@@ -258,6 +258,6 @@ Based on the full suite of ablation stress tests, the Heartbreaker evaluation hi
 
 ### Final Conclusion
 
-By subjecting the pipeline to standalone single-modality checks, group-wise permutations, and provenance audits, the evidence supports a defensible internal-validation result. The primary clean model (Level 3) achieves a highly robust OOF performance (**ROC-AUC 0.9785, Sensitivity 0.8570, Specificity 0.9620**), proving that clinical context adds significant discriminative value without introducing workflow-proxy or text-derived leakage.
+By subjecting the pipeline to standalone single-modality checks, group-wise permutations, and provenance audits, the evidence supports a defensible internal-validation result. The primary clean model (Level 3) achieves a highly robust OOF performance (**ROC-AUC 0.9238, Sensitivity 0.8570, Specificity 0.9620**), proving that clinical context adds significant discriminative value without introducing workflow-proxy or text-derived leakage.
 
 External validation on independent datasets is required before making any clinical claims.

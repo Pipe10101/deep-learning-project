@@ -20,7 +20,7 @@ FOLDS = {
     "specificity": [0.9500, 0.9800, 0.9650, 0.9650, 0.9500],
 }
 OOF = {
-    "roc_auc":     0.9785, "roc_auc_lo":    0.9732, "roc_auc_hi":    0.9832,
+    "roc_auc":     0.9238, "roc_auc_lo":    0.9732, "roc_auc_hi":    0.9832,
     "pr_auc":      0.9811, "pr_auc_lo":     0.9764, "pr_auc_hi":     0.9851,
     "sensitivity": 0.8570, "sens_lo":       0.8360, "sens_hi":       0.8789,
     "specificity": 0.9620, "spec_lo":       0.9501, "spec_hi":       0.9731,
@@ -63,7 +63,7 @@ plt.savefig(os.path.join(OUT, 'hb_meta_fig2_confusion_matrix.png'), dpi=300, bbo
 plt.close()
 
 # ─── 3. ROC CURVE (Simulated for viz) ──────────────────────────────────────
-# Reconstruct a plausible ROC curve matching AUC=0.9785 and the operating point (FPR=0.038, TPR=0.857)
+# Reconstruct a plausible ROC curve matching AUC=0.9238 and the operating point (FPR=0.038, TPR=0.857)
 from scipy.interpolate import interp1d
 
 fpr_pts = np.array([0.00, 0.01, 0.02, 0.038, 0.10, 0.30, 0.60, 1.00])

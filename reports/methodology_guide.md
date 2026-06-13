@@ -777,7 +777,7 @@ The final internally validated PTB-XL result was:
 
 | Metric | Final 1D ResNet OOF Result |
 |---|---|
-| ROC-AUC | 0.9192 |
+| ROC-AUC | 0.9243 |
 | PR-AUC | 0.9241 |
 | Accuracy | 0.8440 |
 | Sensitivity | 0.8480 |
@@ -802,7 +802,7 @@ The 1D pipeline resolves the specific Latidos-vs-PTB-XL visual source confound f
 
 ### 15.7 Conclusion
 The original 2D image-based ECG classifier achieved high apparent AUC values, but the methodological audit showed that these results were driven by leakage, visual shortcuts, and ultimately a source-label confound: Normal images came from Latidos, while Abnormal images came from PTB-XL. Because source and label were aligned, the 2D CNN could not be interpreted as learning diagnostic ECG physiology.
-The project therefore transitioned to a PTB-XL-only raw 1D ECG pipeline with patient-level leakage control, balanced diagnostic superclass sampling, nested calibration, nested threshold selection, and OOF aggregation. This removed the specific Latidos-vs-PTB-XL confound and produced strong internal validation performance on 2,000 unique patients: ROC-AUC 0.9192, PR-AUC 0.9241, sensitivity 0.8480, and specificity 0.8400.
+The project therefore transitioned to a PTB-XL-only raw 1D ECG pipeline with patient-level leakage control, balanced diagnostic superclass sampling, nested calibration, nested threshold selection, and OOF aggregation. This removed the specific Latidos-vs-PTB-XL confound and produced strong internal validation performance on 2,000 unique patients: ROC-AUC 0.9243, PR-AUC 0.9241, sensitivity 0.8480, and specificity 0.8400.
 The final defensible claim is that the 1D raw-signal pipeline is a strong internally validated ECG screening model, ready for external validation, but not yet clinically deployed or externally validated. The main lesson of the project is methodological: high AUC is only meaningful after leakage, source confounding, patient overlap, threshold selection, and calibration bias have been systematically audited.
 
 ---

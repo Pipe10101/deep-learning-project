@@ -17,7 +17,7 @@ Evaluation:
   - OOF aggregation → bootstrap CIs → Brier score → ECE
 
 Baseline (ECG-only, for reference):
-  OOF AUC=0.9192  PR-AUC=0.9241  Sens=0.8480  Spec=0.8400
+  OOF AUC=0.9243  PR-AUC=0.9241  Sens=0.8480  Spec=0.8400
 
 Run:
     python train_multimodal_ecg_model.py

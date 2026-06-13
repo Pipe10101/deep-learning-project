@@ -31,9 +31,9 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, safe_text('Patient Demographic Context'), 0, 1)
     pdf.set_font('Helvetica', '', 10)
-    pdf.cell(0, 6, safe_text(f"Patient ID: {patient_data['patient_id']} | ECG ID: {patient_data['ecg_id']}", 0, 1)
-    pdf.cell(0, 6, safe_text(f"Age: {patient_data['age']} | Sex: {'Male' if patient_data['sex']==0 else 'Female'}", 0, 1)
-    pdf.cell(0, 6, safe_text(f"Report Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", 0, 1)
+    pdf.cell(0, 6, safe_text(f"Patient ID: {patient_data['patient_id']} | ECG ID: {patient_data['ecg_id']}"), 0, 1)
+    pdf.cell(0, 6, safe_text(f"Age: {patient_data['age']} | Sex: {'Male' if patient_data['sex']==0 else 'Female'}"), 0, 1)
+    pdf.cell(0, 6, safe_text(f"Report Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"), 0, 1)
     pdf.ln(5)
 
     # Diagnostic Verdict
@@ -47,7 +47,7 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
     else:
         pdf.set_text_color(245, 158, 11) # Orange
         
-    pdf.cell(0, 8, safe_text(verdict_title.replace('⚠️', '').replace('✅', '').replace('ℹ️', '').strip(), 0, 1)
+    pdf.cell(0, 8, safe_text(verdict_title.replace('⚠️', '').replace('✅', '').replace('ℹ️', '').strip()), 0, 1)
     pdf.set_font('Helvetica', '', 10)
     pdf.set_text_color(0, 0, 0)
     pdf.multi_cell(0, 6, safe_text(verdict_text))
@@ -67,7 +67,7 @@ def generate_pdf_report(patient_data, chart_bytes, predictions, thresholds, clas
         else:
             pdf.set_text_color(100, 100, 100)
         
-        pdf.cell(0, 6, safe_text(f"{c}: {prob:.1f}% (Cutoff: {thresh:.1f}%) - {status}", 0, 1)
+        pdf.cell(0, 6, safe_text(f"{c}: {prob:.1f}% (Cutoff: {thresh:.1f}%) - {status}"), 0, 1)
         
     pdf.set_text_color(0, 0, 0)
     pdf.ln(5)

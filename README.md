@@ -12,6 +12,18 @@ The repository maintains two distinct, complementary pipelines:
 
 ---
 
+## 🚀 Live Product MVP Dashboard
+
+The interactive Multi-Heartbreaker ECG Diagnostic & Triage Dashboard is fully operational.
+* **GitHub Repository URL:** [https://github.com/Pipe10101/deep-learning-project](https://github.com/Pipe10101/deep-learning-project)
+* **App Code Path:** [src/streamlit_dashboard/app.py](file:///Users/felipedeleon/Desktop/Deep%20Ler,Project/src/streamlit_dashboard/app.py)
+* **Local Launch Command:**
+  ```bash
+  streamlit run src/streamlit_dashboard/app.py
+  ```
+
+---
+
 ## 📊 Dataset & Descriptive Analytics
 
 The pipeline is evaluated on a standardized subset of **2,000 unique patient records** from the PTB-XL database, balanced exactly for binary classification:

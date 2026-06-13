@@ -167,6 +167,7 @@ st.write("---")
 
 # Sidebar Configuration
 st.sidebar.header("🛠️ Pipeline Controls")
+st.sidebar.markdown("[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Pipe10101/deep-learning-project)")
 
 # 1. Select Model Mode
 model_mode = st.sidebar.selectbox(

@@ -1,4 +1,4 @@
-# ECG Classification & Multimodal Fusion MVP
+# FVJ Health-Tech | Multi-Heartbreaker CardioAI™
 
 Deep Learning Final Project · IE University
 
@@ -9,18 +9,6 @@ The repository maintains two distinct, complementary pipelines:
 1. **The 1D Physiological Pipeline (ECG-Only):** An automated pipeline operating on raw 12-lead signal waveforms from a single clinical source (PTB-XL). Utilizing a 1D ResNet, Binary Focal Loss, and Out-of-Fold (OOF) Platt Scaling, this pipeline achieves an honest, confound-free cross-validated ROC-AUC of **0.9243**.
 2. **The Multimodal Fusion Pipeline (Heartbreaker):** An advanced late-fusion architecture that leverages the frozen 1D ResNet features combined with patient demographic features (age, sex, BMI) to maximize classification sensitivity and specificity. The primary multimodal model achieves an OOF ROC-AUC of **0.9238** (Tier 1 LR) and **0.9218** (Tier 2 MLP).
 3. **The Multiclass Pipeline (Multi-Label 1D ResNet):** A 5-class multi-label extension capable of predicting NORM, MI, STTC, CD, and HYP simultaneously using `binary_crossentropy` and sigmoid activation, built entirely on patient-disjoint metadata.
-
----
-
-## 🚀 Live Product MVP Dashboard
-
-The interactive Multi-Heartbreaker ECG Diagnostic & Triage Dashboard is fully operational.
-* **GitHub Repository URL:** [https://github.com/Pipe10101/deep-learning-project](https://github.com/Pipe10101/deep-learning-project)
-* **App Code Path:** [src/streamlit_dashboard/app.py](file:///Users/felipedeleon/Desktop/Deep%20Ler,Project/src/streamlit_dashboard/app.py)
-* **Local Launch Command:**
-  ```bash
-  streamlit run src/streamlit_dashboard/app.py
-  ```
 
 ---
 
@@ -90,7 +78,7 @@ To prevent data leakage and metric inflation:
 
 ## 🫀 Model Architectures
 
-The repository implements two tiers of model architectures:
+The repository implements three distinct model architectures:
 
 ### 1. ECG-Only 1D ResNet
 
@@ -103,6 +91,11 @@ The repository implements two tiers of model architectures:
 
 - **Tier 1 (Probability Fusion):** A calibrated Logistic Regression model combining the out-of-fold probability output of the 1D ResNet with the processed demographics.
 * **Tier 2 (Embedding Fusion):** A Multi-Layer Perceptron (MLP) combining the 128-dimensional frozen ECG embedding with a dense metadata embedding branch, followed by dropout layers.
+
+### 3. Multi-Heartbreaker 5-Class Diagnostic Model
+
+- A 5-class multi-label extension capable of predicting NORM, MI, STTC, CD, and HYP simultaneously using `binary_crossentropy` and sigmoid activation, built entirely on patient-disjoint metadata. It outputs individual probability predictions for each of the five cardiac superclasses, allowing for the detection of co-occurring pathologies.
+
 
 ---
 
@@ -212,6 +205,29 @@ This extension pivots from a binary abnormal/normal framework into a multi-label
 http://localhost:8501
 
 
+
+---
+
+## 📱 FVJ CardioAI™ MVP Triage & Diagnostic Product
+
+The **FVJ CardioAI™ MVP** is a clinical decision-support application built using Streamlit and styled with a custom dark-mode glassmorphic theme. It packages all model families into an interactive, clinical-ready system executing real-time inferences on raw time-series data:
+* **Unified Main Page Clinical Control Panel:** Places selectors for the Clinical Task (Binary Triage vs. Multi-label), pathology filters, and lead visualizations directly on the main body (preventing control panels from disappearing when the sidebar collapses).
+* **Seamless Patient Navigation:** Employs session-state Prev/Next navigation buttons to easily flip through patient records.
+* **Interactive CSS Progress Bars:** Renders abnormality probabilities dynamically using HTML/CSS progress bars with Youden J cutoff indicators and pastel status badges.
+* **Live Validation & Leakage Audit Tab:** Contains a built-in validation engine that checks for patient overlap in real-time to guarantee 0% target leakage across training, validation, and out-of-sample splits.
+* **Launch Instructions:** Run the following command in your terminal:
+  ```bash
+  streamlit run src/streamlit_dashboard/app.py
+  ```
+* **Local Web Address:** [http://localhost:8501](http://localhost:8501)
+* **GitHub Repository URL:** [https://github.com/Pipe10101/deep-learning-project](https://github.com/Pipe10101/deep-learning-project)
+
+> [!TIP]
+> **Live Local URL:** Once the server is running, the CardioAI™ dashboard is accessible at [http://localhost:8501](http://localhost:8501).
+
+![FVJ Health-Tech MVP Dashboard UI](src/streamlit_dashboard/assets/inference_completed.png)
+
+*A video demonstrating the live leakage check execution is available at `src/streamlit_dashboard/assets/fvj_validation_audit_tab.webp`.*
 
 ---
 

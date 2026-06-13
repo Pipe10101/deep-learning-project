@@ -752,6 +752,18 @@ Signals are extracted at 100Hz, bandpass-filtered from 0.5–40 Hz to reduce bas
 #### C. Architecture
 A deep 1D-CNN (Conv1D $\rightarrow$ BatchNorm $\rightarrow$ MaxPooling1D $\rightarrow$ GlobalAveragePooling1D) replaces spatial 2D kernels with temporal 1D kernels. Instead of looking for visual rendering patterns, it slides across the time axis to detect QRS complexes, ST segments, and T-waves mathematically.
 
+```mermaid
+flowchart TD
+    Input["Raw ECG Signal<br/>(1000 × 12)"] --> Filter["4th-Order Butterworth Filter<br/>(0.5 - 40 Hz)"]
+    Filter --> ZScore["Lead-wise Z-Score<br/>Standardization"]
+    ZScore --> Stem["Stem Conv1D (32, k=15)<br/>+ BN + ReLU"]
+    Stem --> Res1["Block 1: Conv1D (64, k=11) × 2<br/>+ Residual Connection<br/>+ MaxPooling1D"]
+    Res1 --> Res2["Block 2: Conv1D (128, k=7) × 2<br/>+ Residual Connection<br/>+ MaxPooling1D"]
+    Res2 --> GAP["Global Average Pooling 1D"]
+    GAP --> Dense["Dense (64, ReLU)<br/>+ Dropout (0.5)"]
+    Dense --> Sigmoid["Sigmoid Output Layer<br/>P(Abnormal)"]
+```
+
 #### D. 5-Fold Stratified Cross Validation
 To capture the variance inherent in evaluating on a small subset (40 records per fold), the 1D pipeline was evaluated using a strict 5-Fold Stratified Cross Validation. 
 
@@ -930,6 +942,23 @@ where:
 - $\psi_{\text{tabular}}$ is a dense metadata encoder that processes continuous, binary, and TF-IDF features into a contextual embedding $E_{\text{meta}} \in \mathbb{R}^{32}$.
 - $f_{\text{fusion}}$ is the final classification head (either a Logistic Regression model on probabilities or a Multi-Layer Perceptron on embeddings).
 
+```mermaid
+flowchart TD
+    RawECG["Raw ECG Signal<br/>(1000 × 12)"] --> Preproc["Butterworth Filter<br/>+ Z-Normalization"]
+    Preproc --> ResNet["1D ResNet Encoder<br/>(🔒 Frozen Weights)"]
+    ResNet --> GAP["Global Average Pooling"]
+    GAP --> ECG_Embed["ECG Embedding<br/>(128-d vector)"]
+    
+    TabMetadata["Demographics<br/>(Age, Sex, BMI)"] --> TabDense["Dense Layer<br/>(🔓 Trainable)"]
+    TabDense --> Tab_Embed["Metadata Embedding<br/>(32-d vector)"]
+    
+    ECG_Embed --> Concat["Concatenate Embeddings<br/>(160-d vector)"]
+    Tab_Embed --> Concat
+    
+    Concat --> FusionMLP["Fusion MLP Head<br/>(🔓 Trainable)"]
+    FusionMLP --> Output["Sigmoid Output<br/>P(Abnormal)"]
+```
+
 **Why Frozen Encoder?** The 1D ResNet weights $\theta_{\text{resnet}}$ are strictly frozen during multimodal training. Because the available dataset is constrained ($N=2000$), joint training (unfreezing the ResNet alongside the fusion head) would cause catastrophic overfitting, allowing the vast capacity of the CNN to memorize the training split.
 
 ### 16.2 Leakage Controls in Natural Language Processing (TF-IDF)
@@ -1054,6 +1083,21 @@ The Multi-Heartbreaker CNN reuses the identical 2-block 1D ResNet architecture f
 | **Output** | **`Dense(1, sigmoid)`** | **`Dense(5, sigmoid)`** |
 | **Loss** | **Binary focal loss** | **Binary cross-entropy** |
 | **Metric** | **AUC (single)** | **AUC (multi-label, 5 classes)** |
+
+```mermaid
+flowchart TD
+    Input["Raw 12-lead ECG Signal<br/>(1000 × 12)"] --> Path1["1D Raw Signal Path"]
+    Input --> Path2["Cardiology Prior Feature Path"]
+    
+    Path1 --> Preproc["4th-Order Butterworth Filter<br/>+ Lead Z-Score"]
+    Preproc --> ResNet["Multi-Label 1D ResNet"]
+    ResNet --> CNN_Out["CNN Sigmoid Outputs<br/>(5 classes: NORM, MI, STTC, CD, HYP)"]
+    
+    Path2 --> RPeak["R-Peak Detection<br/>(Scipy peak finder)"]
+    RPeak --> Extract["Extract 59 Clinical Features<br/>(Sokolow-Lyon, Cornell, Q-waves)"]
+    Extract --> LGBM["5 One-vs-Rest LightGBM Models<br/>(with scale_pos_weight)"]
+    LGBM --> LGBM_Out["LightGBM Outputs<br/>(Boosts HYP class)"]
+```
 
 The residual connections within each block follow the standard ResNet identity mapping:
 $$\mathbf{x}_{l+1} = \text{ReLU}(\mathbf{x}_l + \mathcal{F}(\mathbf{x}_l, W_l))$$

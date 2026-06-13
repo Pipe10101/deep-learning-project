@@ -9,11 +9,11 @@ Use this guide to build your visual slides and practice the live presentation. I
 ## Part 1: Slide-by-Slide Deck Outline & Script
 
 ### Slide 1: Title Slide
-* **Slide Title:** Multi-Heartbreaker: Raw 1D ECG Neural Diagnosis and Methodological Integrity
+* **Slide Title:** FVJ Health-Tech | Multi-Heartbreaker: Raw 1D ECG Neural Diagnosis
 * **Subtitle:** Moving from Cheating 2D Computer Vision to Leakage-Free 1D Physiological Screening
-* **Visual Concept:** Minimalist dark mode layout. A clean, single red ECG waveform trace on a dark grid backdrop. Accent colors: Crimson Red (#E53935) and Slate Blue.
+* **Visual Concept:** Minimalist dark mode layout. A clean, single teal/cyan ECG waveform trace on a dark grid backdrop. Accent colors: Crimson Red and Slate Blue.
 * **Presenter Script:**
-  > *"Good morning, everyone. Today, my partner and I are excited to present the Multi-Heartbreaker ECG Diagnostic Suite. Our project represents a rigorous journey in clinical machine learning—moving from an early 2D computer vision pipeline that achieved a 'too-good-to-be-true' 98% accuracy by accidentally learning dataset artifacts, to a methodologically sound, raw 1D signal classification system. We will show you how we audited our models for data leakage, resolved dataset confounds, scaled our cohort to 3,878 patients, and integrated expert clinical priors to solve the rare-class bottleneck."*
+  > *"Good morning, everyone. Today, my partner and I are excited to present the FVJ Health-Tech Multi-Heartbreaker ECG Diagnostic Suite. Our project represents a rigorous journey in clinical machine learning—moving from an early 2D computer vision pipeline that achieved a 'too-good-to-be-true' 98% accuracy by accidentally learning dataset artifacts, to a methodologically sound, raw 1D signal classification system. We will show you how we audited our models for data leakage, resolved dataset confounds, scaled our cohort to 3,878 patients, and integrated expert clinical priors to solve the rare-class bottleneck."*
 
 ---
 
@@ -74,7 +74,7 @@ Use this guide to build your visual slides and practice the live presentation. I
 ### Slide 6: Multi-Label Scaling & Threshold Calibration
 * **Slide Title:** Phase 3: Scaling to Multi-Label Differential Diagnosis
 * **Key Bullet Points:**
-  * Scaled cohort to **3,878 unique patient records** (progressing from 2,000-record binary model).
+  * Scaled cohort to **3,883 unique patient records** (yielding 3,878 successful records, progressing from 2,000-record binary model).
   * Target: 5 co-occurring superclasses: Normal (NORM), Infarction (MI), ST/T-Change (STTC), Conduction (CD), and Hypertrophy (HYP).
   * **Independent Sigmoid Outputs** allow detection of multiple pathologies.
   * **Platt Calibration & Youden's J Optimization** set independent thresholds for each class to handle clinical prevalence variations.
@@ -158,18 +158,18 @@ Follow this step-by-step checklist during your demo rehearsal to ensure a flawle
 
 ### Step 2: Demonstrate Binary Triage
 * [ ] Select **Triage Classifier (Binary CNN)** in the sidebar model selection.
-* [ ] Filter by ground-truth pathology: Select **Normal (NORM)**.
-* [ ] Choose a patient record from the list.
+* [ ] Filter by ground-truth pathology: Select **All Patients** or **Normal (NORM)**.
+* [ ] Click the **Next Patient ➡️** button a few times to show how seamless and quick the UX is for navigating between cases.
 * [ ] Point out the **ECG Waveform Plots**:
   * Explain the difference: The top plot is the raw amplitude in millivolts, showing baseline drift. The bottom plot is the bandpass-filtered and Z-score standardized signal that the CNN actually sees.
   * Select different leads (e.g., Lead II, V1, V5) to show that the dashboard loads and renders them instantly.
 * [ ] Click **Run Neural Network Diagnostic**.
-* [ ] Show the green **✅ NORMAL ECG** verdict card. Point out the probability score (which should be low, e.g. 26%).
+* [ ] Point to the **Verified Ground Truth Pathology** box under the model verdict, showing how you can seamlessly compare the AI's prediction to the actual cardiologist label in real-time.
 
 ### Step 3: Demonstrate Multi-Label Diagnosis & The HYP Warning
 * [ ] Switch the model mode in the sidebar to **Differential Diagnosis (Multi-Label CNN)**.
 * [ ] Filter by ground-truth pathology: Select **Myocardial Infarction (MI)**.
-* [ ] Choose a patient record from the list.
+* [ ] Click **Next Patient ➡️** to load a positive MI case.
 * [ ] Click **Run Neural Network Diagnostic**.
 * [ ] Point out the **Probability Bar Chart**:
   * Show the blue bars (probabilities) and the red dotted vertical lines (**Youden's J Cutoffs**).
@@ -181,3 +181,11 @@ Follow this step-by-step checklist during your demo rehearsal to ensure a flawle
 ### Step 4: Summarize the Business Case
 * [ ] Point to the grey card at the bottom right: **Cardiology MVP Business Case**.
 * [ ] Reiterate that the application executes at the raw signal level, ensuring it is immune to visual rendering confounds and can run directly on edge hardware.
+
+### Step 5: Handling Model Generalization and Edge Cases (FAQ Preparation)
+* [ ] **The "Model Miss" Edge Case (Patient 14102 / ECG ID 15879):**
+  * If a reviewer asks why `Patient 14102` has a ground truth of `MI` but the model predicts `Normal` (NORM probability `54.3%` vs. cutoff `0.465`, and MI probability `0.5%`), explain the clinical context:
+  * *"This is a highly valuable clinical edge case. If we read the cardiologist transcription for Patient 14102, it states: 'anteroseptaler infarkt wahrscheinlich alt'—meaning a probable **old** anteroseptal infarction. Because the event is old, the ECG waveform has largely normalized (loss of active ST elevation and Q-wave regression), which is why the model classifies it as borderline normal. This highlights the limitation of single-lead and static analysis without patient baseline histories."*
+* [ ] **The "Model Triumph" MI Case (Patient 18118 / ECG ID 21272):**
+  * To show a highly confident, correct diagnosis of an active Myocardial Infarction, select **Patient 18118** from the dropdown list.
+  * Click **Run Neural Network Diagnostic** and point out the output: the model correctly predicts **MI with 97.1% probability** (well above the Youden cutoff of 0.080) and predicts Normal (`NORM`) as a clean **0.2%**, demonstrating outstanding out-of-sample diagnostic precision.

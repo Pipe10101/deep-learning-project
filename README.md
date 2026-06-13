@@ -212,9 +212,13 @@ http://localhost:8501
 
 The **FVJ CardioAI™ MVP** is a clinical decision-support application built using Streamlit and styled with a custom dark-mode glassmorphic theme. It packages all model families into an interactive, clinical-ready system executing real-time inferences on raw time-series data:
 * **Unified Main Page Clinical Control Panel:** Places selectors for the Clinical Task (Binary Triage vs. Multi-label), pathology filters, and lead visualizations directly on the main body (preventing control panels from disappearing when the sidebar collapses).
+* **Advanced Patient Cohort Filtering:** Filter the clinical validation dataset by demographics (Age, Sex) and pathologies.
+* **Model Explainability (Grad-CAM):** Integrated XAI capability to visually highlight the precise temporal sequences of the raw ECG waveform that drove the neural network's diagnostic decision.
+* **Automated PDF Clinical Reports:** Generate branded, ready-to-download clinical triage reports containing patient context, raw waveform visualization, probability metrics, and diagnostic verdicts.
 * **Seamless Patient Navigation:** Employs session-state Prev/Next navigation buttons to easily flip through patient records.
 * **Interactive CSS Progress Bars:** Renders abnormality probabilities dynamically using HTML/CSS progress bars with Youden J cutoff indicators and pastel status badges.
 * **Live Validation & Leakage Audit Tab:** Contains a built-in validation engine that checks for patient overlap in real-time to guarantee 0% target leakage across training, validation, and out-of-sample splits.
+* **Docker Cloud Containerization:** Fully containerized architecture using `Dockerfile` and `.dockerignore` for immediate, lightweight deployment to cloud environments like Google Cloud Run or AWS Fargate.
 * **Launch Instructions:** Run the following command in your terminal:
   ```bash
   streamlit run src/streamlit_dashboard/app.py
